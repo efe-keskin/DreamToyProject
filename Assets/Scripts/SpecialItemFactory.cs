@@ -32,16 +32,26 @@ public class SpecialItemFactory
         switch (GetKindForGroupSize(groupSize))
         {
             case SpecialItemKind.Tnt:
-                return Object.Instantiate(tntPrefab, parent);
+                return CreateTnt(parent);
 
             case SpecialItemKind.Rocket:
-                Rocket rocket = Object.Instantiate(rocketPrefab, parent);
                 RocketOrientation orientation = Random.value < 0.5f ? RocketOrientation.Horizontal : RocketOrientation.Vertical;
-                rocket.SetOrientation(orientation);
-                return rocket;
+                return CreateRocket(orientation, parent);
 
             default:
                 return null;
         }
+    }
+
+    public Rocket CreateRocket(RocketOrientation orientation, Transform parent)
+    {
+        Rocket rocket = Object.Instantiate(rocketPrefab, parent);
+        rocket.SetOrientation(orientation);
+        return rocket;
+    }
+
+    public Tnt CreateTnt(Transform parent)
+    {
+        return Object.Instantiate(tntPrefab, parent);
     }
 }
