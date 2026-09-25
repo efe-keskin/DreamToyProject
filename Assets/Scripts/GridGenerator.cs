@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private int levelNumber = 1;
     [SerializeField] private GameObject cubePrefab;
     [SerializeField] private SpecialItemFactory specialItemFactory;
     [SerializeField] private Vase vasePrefab;
@@ -38,13 +37,16 @@ public class GridGenerator : MonoBehaviour
 
     void Awake()
     {
-        level = LevelLoader.Load(levelNumber);
+        explosions = new ExplosionService(this, ApplyGravityAndRefill);
+        hints = new HintPresenter(this);
+    }
+
+    public void Initialize(LevelData levelData)
+    {
+        level = levelData;
         width = level.Width;
         height = level.Height;
         MovesRemaining = level.MoveCount;
-
-        explosions = new ExplosionService(this, ApplyGravityAndRefill);
-        hints = new HintPresenter(this);
     }
 
     void Start()
