@@ -5,10 +5,13 @@ using UnityEngine;
 public class GridGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject cubePrefab;
+    [SerializeField] private SpecialItemFactory specialItemFactory;
     [SerializeField] private int width = 6;
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private float fallDuration = 0.3f;
+    [SerializeField] private float mergeDuration = 0.2f;
+    [SerializeField] private float appearDuration = 0.15f;
     [SerializeField] private int startingMoves = 20;
 
     private const int MinGroupSize = 2;
@@ -17,7 +20,7 @@ public class GridGenerator : MonoBehaviour
 
     public event System.Action<int> MovesChanged;
 
-    private Cube[,] cubes;
+    private GridItem[,] items;
     private bool isBusy;
 
     private static readonly Vector2Int[] Directions =
@@ -32,7 +35,7 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
-        cubes = new Cube[width, height];
+        items = new GridItem[width, height];
 
         for (int x = 0; x < width; x++)
         {
@@ -41,12 +44,15 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
-    public void OnCubeClicked(Cube cube)
+    public void OnItemClicked(GridItem item)
     {
         if (isBusy || MovesRemaining <= 0)
             return;
 
-        List<Cube> group = FindGroup(cube);
+        if (item is not Cube clickedCube)
+            return;
+
+        List<Cube> group = FindGroup(clickedCube);
         if (group.Count < MinGroupSize)
             return;
 
@@ -54,10 +60,18 @@ public class GridGenerator : MonoBehaviour
         Debug.Log($"Moves remaining: {MovesRemaining}");
         MovesChanged?.Invoke(MovesRemaining);
 
-        foreach (Cube member in group)
-            RemoveCube(member);
+        SpecialItem specialItem = specialItemFactory.CreateForGroupSize(group.Count, transform);
+        if (specialItem == null)
+        {
+            foreach (Cube member in group)
+                RemoveItem(member);
 
-        ApplyGravityAndRefill();
+            ApplyGravityAndRefill();
+        }
+        else
+        {
+            MergeIntoSpecialItem(group, clickedCube.X, clickedCube.Y, specialItem);
+        }
     }
 
     private Cube CreateCube(int x, int y, Vector3 spawnPosition)
@@ -68,8 +82,34 @@ public class GridGenerator : MonoBehaviour
         CubeType randomType = (CubeType)Random.Range(0, 4);
         Cube cube = cubeObject.GetComponent<Cube>();
         cube.Initialize(randomType, x, y, this);
-        cubes[x, y] = cube;
+        items[x, y] = cube;
         return cube;
+    }
+
+    private void MergeIntoSpecialItem(List<Cube> group, int x, int y, SpecialItem specialItem)
+    {
+        isBusy = true;
+
+        foreach (Cube member in group)
+            items[member.X, member.Y] = null;
+
+        specialItem.transform.localPosition = GetLocalPosition(x, y);
+        specialItem.AttachToBoard(this, x, y);
+        items[x, y] = specialItem;
+
+        Vector3 target = GetLocalPosition(x, y);
+        Sequence merge = DOTween.Sequence();
+
+        foreach (Cube member in group)
+            merge.Join(member.MoveTo(target, mergeDuration, Ease.InBack));
+
+        merge.AppendCallback(() =>
+        {
+            foreach (Cube member in group)
+                Destroy(member.gameObject);
+        });
+        merge.Append(specialItem.PlayAppear(appearDuration));
+        merge.OnComplete(ApplyGravityAndRefill);
     }
 
     private Vector3 GetLocalPosition(int x, int y)
@@ -79,10 +119,10 @@ public class GridGenerator : MonoBehaviour
         return new Vector3(x * spacing - offsetX, y * spacing - offsetY, 0f);
     }
 
-    private void RemoveCube(Cube cube)
+    private void RemoveItem(GridItem item)
     {
-        cubes[cube.X, cube.Y] = null;
-        Destroy(cube.gameObject);
+        items[item.X, item.Y] = null;
+        Destroy(item.gameObject);
     }
 
     private void ApplyGravityAndRefill()
@@ -105,16 +145,16 @@ public class GridGenerator : MonoBehaviour
 
         for (int y = 0; y < height; y++)
         {
-            Cube cube = cubes[x, y];
-            if (cube == null)
+            GridItem item = items[x, y];
+            if (item == null)
                 continue;
 
             if (y != targetY)
             {
-                cubes[x, targetY] = cube;
-                cubes[x, y] = null;
-                cube.SetGridPosition(x, targetY);
-                transition.Join(cube.MoveTo(GetLocalPosition(x, targetY), fallDuration));
+                items[x, targetY] = item;
+                items[x, y] = null;
+                item.SetGridPosition(x, targetY);
+                transition.Join(item.MoveTo(GetLocalPosition(x, targetY), fallDuration));
             }
 
             targetY++;
@@ -155,8 +195,7 @@ public class GridGenerator : MonoBehaviour
                 if (nx < 0 || nx >= width || ny < 0 || ny >= height)
                     continue;
 
-                Cube neighbor = cubes[nx, ny];
-                if (neighbor == null || neighbor.Type != start.Type || visited.Contains(neighbor))
+                if (items[nx, ny] is not Cube neighbor || neighbor.Type != start.Type || visited.Contains(neighbor))
                     continue;
 
                 visited.Add(neighbor);
