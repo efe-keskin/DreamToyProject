@@ -27,15 +27,7 @@ public class GridGenerator : MonoBehaviour
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
-            {
-                GameObject cubeObject = Instantiate(cubePrefab, transform);
-                cubeObject.transform.localPosition = GetLocalPosition(x, y);
-
-                CubeType randomType = (CubeType)Random.Range(0, 4);
-                Cube cube = cubeObject.GetComponent<Cube>();
-                cube.Initialize(randomType, x, y, this);
-                cubes[x, y] = cube;
-            }
+                CreateCube(x, y, GetLocalPosition(x, y));
         }
     }
 
@@ -51,7 +43,19 @@ public class GridGenerator : MonoBehaviour
         foreach (Cube member in group)
             RemoveCube(member);
 
-        ApplyGravity();
+        ApplyGravityAndRefill();
+    }
+
+    private Cube CreateCube(int x, int y, Vector3 spawnPosition)
+    {
+        GameObject cubeObject = Instantiate(cubePrefab, transform);
+        cubeObject.transform.localPosition = spawnPosition;
+
+        CubeType randomType = (CubeType)Random.Range(0, 4);
+        Cube cube = cubeObject.GetComponent<Cube>();
+        cube.Initialize(randomType, x, y, this);
+        cubes[x, y] = cube;
+        return cube;
     }
 
     private Vector3 GetLocalPosition(int x, int y)
@@ -67,34 +71,52 @@ public class GridGenerator : MonoBehaviour
         Destroy(cube.gameObject);
     }
 
-    private void ApplyGravity()
+    private void ApplyGravityAndRefill()
     {
-        Sequence fall = DOTween.Sequence();
+        isBusy = true;
+        Sequence transition = DOTween.Sequence();
 
         for (int x = 0; x < width; x++)
         {
-            int targetY = 0;
-
-            for (int y = 0; y < height; y++)
-            {
-                Cube cube = cubes[x, y];
-                if (cube == null)
-                    continue;
-
-                if (y != targetY)
-                {
-                    cubes[x, targetY] = cube;
-                    cubes[x, y] = null;
-                    cube.SetGridPosition(x, targetY);
-                    fall.Join(cube.MoveTo(GetLocalPosition(x, targetY), fallDuration));
-                }
-
-                targetY++;
-            }
+            int firstEmptyY = CompactColumn(x, transition);
+            RefillColumn(x, firstEmptyY, transition);
         }
 
-        isBusy = true;
-        fall.OnComplete(() => isBusy = false);
+        transition.OnComplete(() => isBusy = false);
+    }
+
+    private int CompactColumn(int x, Sequence transition)
+    {
+        int targetY = 0;
+
+        for (int y = 0; y < height; y++)
+        {
+            Cube cube = cubes[x, y];
+            if (cube == null)
+                continue;
+
+            if (y != targetY)
+            {
+                cubes[x, targetY] = cube;
+                cubes[x, y] = null;
+                cube.SetGridPosition(x, targetY);
+                transition.Join(cube.MoveTo(GetLocalPosition(x, targetY), fallDuration));
+            }
+
+            targetY++;
+        }
+
+        return targetY;
+    }
+
+    private void RefillColumn(int x, int firstEmptyY, Sequence transition)
+    {
+        for (int y = firstEmptyY; y < height; y++)
+        {
+            int spawnY = height + (y - firstEmptyY);
+            Cube cube = CreateCube(x, y, GetLocalPosition(x, spawnY));
+            transition.Join(cube.MoveTo(GetLocalPosition(x, y), fallDuration));
+        }
     }
 
     private List<Cube> FindGroup(Cube start)
