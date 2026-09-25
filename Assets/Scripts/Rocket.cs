@@ -9,8 +9,6 @@ public enum RocketOrientation
 
 public class Rocket : SpecialItem
 {
-    [SerializeField] private float secondsPerCell = 0.05f;
-
     public RocketOrientation Orientation { get; private set; }
 
     public void SetOrientation(RocketOrientation orientation)
@@ -25,52 +23,12 @@ public class Rocket : SpecialItem
 
     public override Sequence Explode(GridGenerator board, ExplosionService explosions)
     {
-        GetComponent<SpriteRenderer>().enabled = false;
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.enabled = false;
 
-        Vector2Int direction = Orientation == RocketOrientation.Horizontal ? Vector2Int.right : Vector2Int.up;
+        Vector2Int axis = Orientation == RocketOrientation.Horizontal ? Vector2Int.right : Vector2Int.up;
         Sequence explosion = DOTween.Sequence();
-        AddHalf(explosion, board, explosions, direction);
-        AddHalf(explosion, board, explosions, -direction);
+        RocketBeam.AddPair(explosion, board, explosions, X, Y, axis, spriteRenderer.sprite, spriteRenderer.color);
         return explosion;
-    }
-
-    private void AddHalf(Sequence explosion, GridGenerator board, ExplosionService explosions, Vector2Int direction)
-    {
-        Transform half = CreateHalf(board);
-
-        int steps = 0;
-        int x = X + direction.x;
-        int y = Y + direction.y;
-
-        while (board.IsInside(x, y))
-        {
-            steps++;
-            int cellX = x;
-            int cellY = y;
-            explosion.InsertCallback(steps * secondsPerCell, () => explosions.DamageCell(cellX, cellY));
-            x += direction.x;
-            y += direction.y;
-        }
-
-        float travelDuration = (steps + 1) * secondsPerCell;
-        explosion.Insert(0f, half.DOLocalMove(board.GetLocalPosition(x, y), travelDuration).SetEase(Ease.Linear));
-        explosion.InsertCallback(travelDuration, () => Destroy(half.gameObject));
-    }
-
-    private Transform CreateHalf(GridGenerator board)
-    {
-        SpriteRenderer source = GetComponent<SpriteRenderer>();
-
-        GameObject half = new GameObject("RocketHalf");
-        half.transform.SetParent(board.transform, false);
-        half.transform.localPosition = transform.localPosition;
-        half.transform.localScale = transform.localScale;
-
-        SpriteRenderer renderer = half.AddComponent<SpriteRenderer>();
-        renderer.sprite = source.sprite;
-        renderer.color = source.color;
-        renderer.sortingOrder = source.sortingOrder + 1;
-
-        return half.transform;
     }
 }
