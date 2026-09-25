@@ -1,0 +1,45 @@
+using DG.Tweening;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public abstract class GridItem : MonoBehaviour, IPointerClickHandler
+{
+    public int X { get; private set; }
+    public int Y { get; private set; }
+
+    private GridGenerator board;
+
+    public void AttachToBoard(GridGenerator board, int x, int y)
+    {
+        this.board = board;
+        SetGridPosition(x, y);
+    }
+
+    public void SetGridPosition(int x, int y)
+    {
+        X = x;
+        Y = y;
+        name = $"{GetType().Name}_{x}_{y}";
+    }
+
+    public Tween MoveTo(Vector3 localPosition, float duration, Ease ease = Ease.InQuad)
+    {
+        return transform.DOLocalMove(localPosition, duration)
+            .SetEase(ease)
+            .SetLink(gameObject);
+    }
+
+    public Tween PlayAppear(float duration)
+    {
+        Vector3 targetScale = transform.localScale;
+        transform.localScale = Vector3.zero;
+        return transform.DOScale(targetScale, duration)
+            .SetEase(Ease.OutBack)
+            .SetLink(gameObject);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        board.OnItemClicked(this);
+    }
+}
