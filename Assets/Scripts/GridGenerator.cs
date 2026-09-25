@@ -6,6 +6,8 @@ public class GridGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject cubePrefab;
     [SerializeField] private SpecialItemFactory specialItemFactory;
+    [SerializeField] private Vase vasePrefab;
+    [SerializeField] private List<Vector2Int> vaseCells = new List<Vector2Int>();
     [SerializeField] private int width = 6;
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
@@ -46,7 +48,12 @@ public class GridGenerator : MonoBehaviour
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
-                CreateCube(x, y, GetLocalPosition(x, y));
+            {
+                if (vaseCells.Contains(new Vector2Int(x, y)))
+                    CreateVase(x, y);
+                else
+                    CreateCube(x, y, GetLocalPosition(x, y));
+            }
         }
 
         hints.Refresh();
@@ -80,6 +87,7 @@ public class GridGenerator : MonoBehaviour
             return;
 
         SpendMove();
+        DamageAdjacentObstacles(group);
 
         SpecialItem specialItem = specialItemFactory.CreateForGroupSize(group.Count, transform);
         if (specialItem == null)
@@ -127,6 +135,40 @@ public class GridGenerator : MonoBehaviour
     {
         ClearCell(item);
         Destroy(item.gameObject);
+    }
+
+    public void DamageObstacle(Obstacle obstacle, DamageSource source)
+    {
+        if (!obstacle.CanTakeDamageFrom(source))
+            return;
+
+        if (obstacle.TakeDamage())
+            RemoveItem(obstacle);
+    }
+
+    private void DamageAdjacentObstacles(List<Cube> group)
+    {
+        HashSet<Obstacle> adjacentObstacles = new HashSet<Obstacle>();
+
+        foreach (Cube cube in group)
+        {
+            foreach (Vector2Int direction in Directions)
+            {
+                if (GetItem(cube.X + direction.x, cube.Y + direction.y) is Obstacle obstacle)
+                    adjacentObstacles.Add(obstacle);
+            }
+        }
+
+        foreach (Obstacle obstacle in adjacentObstacles)
+            DamageObstacle(obstacle, DamageSource.Blast);
+    }
+
+    private void CreateVase(int x, int y)
+    {
+        Vase vase = Instantiate(vasePrefab, transform);
+        vase.transform.localPosition = GetLocalPosition(x, y);
+        vase.AttachToBoard(this, x, y);
+        items[x, y] = vase;
     }
 
     private void SpendMove()
