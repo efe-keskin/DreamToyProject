@@ -8,6 +8,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
 
+    private const int MinGroupSize = 2;
+
     private Cube[,] cubes;
 
     private static readonly Vector2Int[] Directions =
@@ -41,7 +43,17 @@ public class GridGenerator : MonoBehaviour
     public void OnCubeClicked(Cube cube)
     {
         List<Cube> group = FindGroup(cube);
-        Debug.Log($"Group size: {group.Count}");
+        if (group.Count < MinGroupSize)
+            return;
+
+        foreach (Cube member in group)
+            RemoveCube(member);
+    }
+
+    private void RemoveCube(Cube cube)
+    {
+        cubes[cube.X, cube.Y] = null;
+        Destroy(cube.gameObject);
     }
 
     private List<Cube> FindGroup(Cube start)
