@@ -8,6 +8,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private SpecialItemFactory specialItemFactory;
     [SerializeField] private Vase vasePrefab;
     [SerializeField] private List<Vector2Int> vaseCells = new List<Vector2Int>();
+    [SerializeField] private Stone stonePrefab;
+    [SerializeField] private List<Vector2Int> stoneCells = new List<Vector2Int>();
     [SerializeField] private int width = 6;
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
@@ -49,8 +51,12 @@ public class GridGenerator : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                if (vaseCells.Contains(new Vector2Int(x, y)))
-                    CreateVase(x, y);
+                Vector2Int cell = new Vector2Int(x, y);
+
+                if (vaseCells.Contains(cell))
+                    CreateObstacle(vasePrefab, x, y);
+                else if (stoneCells.Contains(cell))
+                    CreateObstacle(stonePrefab, x, y);
                 else
                     CreateCube(x, y, GetLocalPosition(x, y));
             }
@@ -163,12 +169,12 @@ public class GridGenerator : MonoBehaviour
             DamageObstacle(obstacle, DamageSource.Blast);
     }
 
-    private void CreateVase(int x, int y)
+    private void CreateObstacle(Obstacle prefab, int x, int y)
     {
-        Vase vase = Instantiate(vasePrefab, transform);
-        vase.transform.localPosition = GetLocalPosition(x, y);
-        vase.AttachToBoard(this, x, y);
-        items[x, y] = vase;
+        Obstacle obstacle = Instantiate(prefab, transform);
+        obstacle.transform.localPosition = GetLocalPosition(x, y);
+        obstacle.AttachToBoard(this, x, y);
+        items[x, y] = obstacle;
     }
 
     private void SpendMove()
@@ -251,6 +257,12 @@ public class GridGenerator : MonoBehaviour
             GridItem item = items[x, y];
             if (item == null)
                 continue;
+
+            if (!item.CanFall)
+            {
+                targetY = y + 1;
+                continue;
+            }
 
             if (y != targetY)
             {

@@ -591,10 +591,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridGenerator
   cubePrefab: {fileID: 8248393186255965678, guid: e707177d040f346ef951f22cebe61da1, type: 3}
+  specialItemFactory:
+    rocketPrefab: {fileID: 3963992842245885685, guid: b19470e38221c4f2ebaae16563edd72e, type: 3}
+    tntPrefab: {fileID: -2706338062643875906, guid: 2960be3661cd249ef8a94f2a415f5f8e, type: 3}
+  vasePrefab: {fileID: 8192145606865968885, guid: 63ed4300dd1464c34b805d29bc72a3b3, type: 3}
+  vaseCells:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 3}
+  stonePrefab: {fileID: 8180531717198163665, guid: 11e473b9d9cb94af6bd8b5d859bffb12, type: 3}
+  stoneCells:
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
+  - {x: 1, y: 1}
+  - {x: 1, y: 2}
   width: 6
   height: 6
   spacing: 1.1
   fallDuration: 0.3
+  mergeDuration: 0.2
+  appearDuration: 0.15
   startingMoves: 20
 --- !u!4 &1968818127
 Transform:
