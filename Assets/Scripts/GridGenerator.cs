@@ -4,21 +4,16 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
+    [SerializeField] private int levelNumber = 1;
     [SerializeField] private GameObject cubePrefab;
     [SerializeField] private SpecialItemFactory specialItemFactory;
     [SerializeField] private Vase vasePrefab;
-    [SerializeField] private List<Vector2Int> vaseCells = new List<Vector2Int>();
     [SerializeField] private Stone stonePrefab;
-    [SerializeField] private List<Vector2Int> stoneCells = new List<Vector2Int>();
     [SerializeField] private ChaliceBox chaliceBoxPrefab;
-    [SerializeField] private List<Vector2Int> chaliceBoxBottomLeftCells = new List<Vector2Int>();
-    [SerializeField] private int width = 6;
-    [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private float fallDuration = 0.3f;
     [SerializeField] private float mergeDuration = 0.2f;
     [SerializeField] private float appearDuration = 0.15f;
-    [SerializeField] private int startingMoves = 20;
 
     private const int MinGroupSize = 2;
 
@@ -28,6 +23,9 @@ public class GridGenerator : MonoBehaviour
 
     public event System.Action<int> MovesChanged;
 
+    private LevelData level;
+    private int width;
+    private int height;
     private GridItem[,] items;
     private ExplosionService explosions;
     private HintPresenter hints;
@@ -40,7 +38,11 @@ public class GridGenerator : MonoBehaviour
 
     void Awake()
     {
-        MovesRemaining = startingMoves;
+        level = LevelLoader.Load(levelNumber);
+        width = level.Width;
+        height = level.Height;
+        MovesRemaining = level.MoveCount;
+
         explosions = new ExplosionService(this, ApplyGravityAndRefill);
         hints = new HintPresenter(this);
     }
@@ -49,25 +51,10 @@ public class GridGenerator : MonoBehaviour
     {
         items = new GridItem[width, height];
 
-        foreach (Vector2Int bottomLeft in chaliceBoxBottomLeftCells)
-            CreateChaliceBox(bottomLeft.x, bottomLeft.y);
-
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
-            {
-                Vector2Int cell = new Vector2Int(x, y);
-
-                if (items[x, y] != null)
-                    continue;
-
-                if (vaseCells.Contains(cell))
-                    CreateObstacle(vasePrefab, x, y);
-                else if (stoneCells.Contains(cell))
-                    CreateObstacle(stonePrefab, x, y);
-                else
-                    CreateCube(x, y, GetLocalPosition(x, y));
-            }
+            for (int x = 0; x < width; x++)
+                CreateFromToken(level.GetToken(x, y), x, y);
         }
 
         hints.Refresh();
@@ -193,12 +180,51 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
-    private void CreateObstacle(Obstacle prefab, int x, int y)
+    private void CreateFromToken(string token, int x, int y)
     {
-        Obstacle obstacle = Instantiate(prefab, transform);
-        obstacle.transform.localPosition = GetLocalPosition(x, y);
-        obstacle.AttachToBoard(this, x, y);
-        items[x, y] = obstacle;
+        switch (token)
+        {
+            case LevelTokens.Red:
+                CreateCube(x, y, GetLocalPosition(x, y), CubeType.Red);
+                break;
+            case LevelTokens.Green:
+                CreateCube(x, y, GetLocalPosition(x, y), CubeType.Green);
+                break;
+            case LevelTokens.Blue:
+                CreateCube(x, y, GetLocalPosition(x, y), CubeType.Blue);
+                break;
+            case LevelTokens.Yellow:
+                CreateCube(x, y, GetLocalPosition(x, y), CubeType.Yellow);
+                break;
+            case LevelTokens.RandomCube:
+                CreateCube(x, y, GetLocalPosition(x, y), RandomCubeType());
+                break;
+            case LevelTokens.VerticalRocket:
+                PlaceItem(specialItemFactory.CreateRocket(RocketOrientation.Vertical, transform), x, y);
+                break;
+            case LevelTokens.HorizontalRocket:
+                PlaceItem(specialItemFactory.CreateRocket(RocketOrientation.Horizontal, transform), x, y);
+                break;
+            case LevelTokens.Tnt:
+                PlaceItem(specialItemFactory.CreateTnt(transform), x, y);
+                break;
+            case LevelTokens.Stone:
+                PlaceItem(Instantiate(stonePrefab, transform), x, y);
+                break;
+            case LevelTokens.Vase:
+                PlaceItem(Instantiate(vasePrefab, transform), x, y);
+                break;
+            case LevelTokens.ChaliceBoxBottomLeft:
+                CreateChaliceBox(x, y);
+                break;
+        }
+    }
+
+    private void PlaceItem(GridItem item, int x, int y)
+    {
+        item.transform.localPosition = GetLocalPosition(x, y);
+        item.AttachToBoard(this, x, y);
+        items[x, y] = item;
     }
 
     private void CreateChaliceBox(int x, int y)
@@ -222,16 +248,20 @@ public class GridGenerator : MonoBehaviour
         MovesChanged?.Invoke(MovesRemaining);
     }
 
-    private Cube CreateCube(int x, int y, Vector3 spawnPosition)
+    private Cube CreateCube(int x, int y, Vector3 spawnPosition, CubeType type)
     {
         GameObject cubeObject = Instantiate(cubePrefab, transform);
         cubeObject.transform.localPosition = spawnPosition;
 
-        CubeType randomType = (CubeType)Random.Range(0, 4);
         Cube cube = cubeObject.GetComponent<Cube>();
-        cube.Initialize(randomType, x, y, this);
+        cube.Initialize(type, x, y, this);
         items[x, y] = cube;
         return cube;
+    }
+
+    private static CubeType RandomCubeType()
+    {
+        return (CubeType)Random.Range(0, 4);
     }
 
     private void MergeIntoSpecialItem(List<Cube> group, int x, int y, SpecialItem specialItem)
@@ -241,9 +271,7 @@ public class GridGenerator : MonoBehaviour
         foreach (Cube member in group)
             ClearCells(member);
 
-        specialItem.transform.localPosition = GetLocalPosition(x, y);
-        specialItem.AttachToBoard(this, x, y);
-        items[x, y] = specialItem;
+        PlaceItem(specialItem, x, y);
 
         Vector3 target = GetLocalPosition(x, y);
         Sequence merge = DOTween.Sequence();
@@ -321,7 +349,7 @@ public class GridGenerator : MonoBehaviour
         for (int y = firstEmptyY; y < height; y++)
         {
             int spawnY = height + (y - firstEmptyY);
-            Cube cube = CreateCube(x, y, GetLocalPosition(x, spawnY));
+            Cube cube = CreateCube(x, y, GetLocalPosition(x, spawnY), RandomCubeType());
             transition.Join(cube.MoveTo(GetLocalPosition(x, y), fallDuration));
         }
     }

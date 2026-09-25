@@ -1,0 +1,15 @@
+{
+  "level_number": 3,
+  "grid_width": 7,
+  "grid_height": 7,
+  "move_count": 20,
+  "grid": [
+    "s", "s", "s", "rand", "s", "s", "s",
+    "r", "r", "r", "rand", "b", "b", "b",
+    "r", "r", "r", "rand", "b", "b", "b",
+    "rand", "rand", "rand", "rand", "rand", "rand", "rand",
+    "rand", "rand", "rand", "rand", "rand", "rand", "rand",
+    "rand", "rand", "rand", "rand", "rand", "rand", "rand",
+    "rand", "rand", "rand", "rand", "rand", "rand", "rand"
+  ]
+}

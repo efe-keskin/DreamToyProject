@@ -1,0 +1,16 @@
+{
+  "level_number": 9,
+  "grid_width": 8,
+  "grid_height": 8,
+  "move_count": 32,
+  "grid": [
+    "cbBL", "cbBR", "rand", "rand", "rand", "rand", "cbBL", "cbBR",
+    "cbTL", "cbTR", "rand", "rand", "rand", "rand", "cbTL", "cbTR",
+    "rand", "s", "rand", "rand", "rand", "rand", "s", "rand",
+    "rand", "rand", "t", "t", "rand", "rand", "rand", "rand",
+    "v", "rand", "rand", "rand", "rand", "rand", "rand", "v",
+    "rand", "rand", "rand", "s", "s", "hro", "rand", "rand",
+    "rand", "v", "rand", "rand", "rand", "rand", "v", "rand",
+    "rand", "rand", "vro", "rand", "rand", "rand", "rand", "rand"
+  ]
+}

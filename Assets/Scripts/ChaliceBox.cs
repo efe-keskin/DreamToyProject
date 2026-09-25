@@ -26,18 +26,6 @@ public class ChaliceBox : Obstacle
 
     protected override int MaxHealth => doorHealth;
 
-    public static bool TryGetTokenOffset(string token, out Vector2Int offset)
-    {
-        switch (token)
-        {
-            case "cbBL": offset = new Vector2Int(0, 0); return true;
-            case "cbBR": offset = new Vector2Int(1, 0); return true;
-            case "cbTL": offset = new Vector2Int(0, 1); return true;
-            case "cbTR": offset = new Vector2Int(1, 1); return true;
-            default: offset = Vector2Int.zero; return false;
-        }
-    }
-
     protected override void OnBlast(DamageTransaction transaction, int adjacentCubeCount)
     {
         if (Phase == ChaliceBoxPhase.Door)

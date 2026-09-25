@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -424,6 +425,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d35e07cbe06624878852872470cbe7e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardCameraFitter
+  board: {fileID: 1968818126}
+  padding: 0.5
+  spaceAboveBoard: 1
 --- !u!1 &675028144
 GameObject:
   m_ObjectHideFlags: 0
@@ -590,32 +606,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ed564ceb4844cc684d47515fa83835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridGenerator
+  levelNumber: 9
   cubePrefab: {fileID: 8248393186255965678, guid: e707177d040f346ef951f22cebe61da1, type: 3}
   specialItemFactory:
     rocketPrefab: {fileID: 3963992842245885685, guid: b19470e38221c4f2ebaae16563edd72e, type: 3}
     tntPrefab: {fileID: -2706338062643875906, guid: 2960be3661cd249ef8a94f2a415f5f8e, type: 3}
   vasePrefab: {fileID: 8192145606865968885, guid: 63ed4300dd1464c34b805d29bc72a3b3, type: 3}
-  vaseCells:
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
-  - {x: 2, y: 3}
   stonePrefab: {fileID: 8180531717198163665, guid: 11e473b9d9cb94af6bd8b5d859bffb12, type: 3}
-  stoneCells:
-  - {x: 1, y: 0}
-  - {x: 2, y: 0}
-  - {x: 3, y: 0}
-  - {x: 1, y: 1}
-  - {x: 1, y: 2}
   chaliceBoxPrefab: {fileID: 2850371299559589301, guid: 4d7aac24e9bdf4e0abd7f109a030166f, type: 3}
-  chaliceBoxBottomLeftCells:
-  - {x: 2, y: 2}
-  width: 6
-  height: 6
   spacing: 1.1
   fallDuration: 0.3
   mergeDuration: 0.2
   appearDuration: 0.15
-  startingMoves: 20
 --- !u!4 &1968818127
 Transform:
   m_ObjectHideFlags: 0
