@@ -17,11 +17,14 @@ public class GridGenerator : MonoBehaviour
     private const int MinGroupSize = 2;
 
     public int MovesRemaining { get; private set; }
+    public int Width => width;
+    public int Height => height;
 
     public event System.Action<int> MovesChanged;
 
     private GridItem[,] items;
     private ExplosionService explosions;
+    private HintPresenter hints;
     private bool isBusy;
 
     private static readonly Vector2Int[] Directions =
@@ -33,6 +36,7 @@ public class GridGenerator : MonoBehaviour
     {
         MovesRemaining = startingMoves;
         explosions = new ExplosionService(this, ApplyGravityAndRefill);
+        hints = new HintPresenter(this);
     }
 
     void Start()
@@ -44,6 +48,8 @@ public class GridGenerator : MonoBehaviour
             for (int y = 0; y < height; y++)
                 CreateCube(x, y, GetLocalPosition(x, y));
         }
+
+        hints.Refresh();
     }
 
     public void OnItemClicked(GridItem item)
@@ -56,7 +62,7 @@ public class GridGenerator : MonoBehaviour
             List<SpecialItem> connected = FindConnected(clickedSpecial, _ => true);
 
             SpendMove();
-            isBusy = true;
+            BeginTransition();
 
             if (connected.Count == 1)
                 explosions.Trigger(clickedSpecial);
@@ -69,7 +75,7 @@ public class GridGenerator : MonoBehaviour
         if (item is not Cube clickedCube)
             return;
 
-        List<Cube> group = FindConnected(clickedCube, cube => cube.Type == clickedCube.Type);
+        List<Cube> group = FindCubeGroup(clickedCube);
         if (group.Count < MinGroupSize)
             return;
 
@@ -97,6 +103,11 @@ public class GridGenerator : MonoBehaviour
     public GridItem GetItem(int x, int y)
     {
         return IsInside(x, y) ? items[x, y] : null;
+    }
+
+    public List<Cube> FindCubeGroup(Cube start)
+    {
+        return FindConnected(start, cube => cube.Type == start.Type);
     }
 
     public Vector3 GetLocalPosition(int x, int y)
@@ -139,7 +150,7 @@ public class GridGenerator : MonoBehaviour
 
     private void MergeIntoSpecialItem(List<Cube> group, int x, int y, SpecialItem specialItem)
     {
-        isBusy = true;
+        BeginTransition();
 
         foreach (Cube member in group)
             ClearCell(member);
@@ -165,7 +176,7 @@ public class GridGenerator : MonoBehaviour
 
     private void ApplyGravityAndRefill()
     {
-        isBusy = true;
+        BeginTransition();
         Sequence transition = DOTween.Sequence();
 
         for (int x = 0; x < width; x++)
@@ -174,7 +185,19 @@ public class GridGenerator : MonoBehaviour
             RefillColumn(x, firstEmptyY, transition);
         }
 
-        transition.OnComplete(() => isBusy = false);
+        transition.OnComplete(EndTransition);
+    }
+
+    private void BeginTransition()
+    {
+        isBusy = true;
+        hints.Clear();
+    }
+
+    private void EndTransition()
+    {
+        isBusy = false;
+        hints.Refresh();
     }
 
     private int CompactColumn(int x, Sequence transition)
