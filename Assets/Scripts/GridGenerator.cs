@@ -53,16 +53,23 @@ public class GridGenerator : MonoBehaviour
 
         if (item is SpecialItem clickedSpecial)
         {
+            List<SpecialItem> connected = FindConnected(clickedSpecial, _ => true);
+
             SpendMove();
             isBusy = true;
-            explosions.Trigger(clickedSpecial);
+
+            if (connected.Count == 1)
+                explosions.Trigger(clickedSpecial);
+            else
+                explosions.TriggerCombo(connected, clickedSpecial);
+
             return;
         }
 
         if (item is not Cube clickedCube)
             return;
 
-        List<Cube> group = FindGroup(clickedCube);
+        List<Cube> group = FindConnected(clickedCube, cube => cube.Type == clickedCube.Type);
         if (group.Count < MinGroupSize)
             return;
 
@@ -204,18 +211,18 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
-    private List<Cube> FindGroup(Cube start)
+    private List<T> FindConnected<T>(T start, System.Predicate<T> matches) where T : GridItem
     {
-        List<Cube> group = new List<Cube>();
-        HashSet<Cube> visited = new HashSet<Cube>();
-        Queue<Cube> queue = new Queue<Cube>();
+        List<T> group = new List<T>();
+        HashSet<T> visited = new HashSet<T>();
+        Queue<T> queue = new Queue<T>();
 
         visited.Add(start);
         queue.Enqueue(start);
 
         while (queue.Count > 0)
         {
-            Cube current = queue.Dequeue();
+            T current = queue.Dequeue();
             group.Add(current);
 
             foreach (Vector2Int direction in Directions)
@@ -223,7 +230,7 @@ public class GridGenerator : MonoBehaviour
                 int nx = current.X + direction.x;
                 int ny = current.Y + direction.y;
 
-                if (GetItem(nx, ny) is not Cube neighbor || neighbor.Type != start.Type || visited.Contains(neighbor))
+                if (GetItem(nx, ny) is not T neighbor || !matches(neighbor) || visited.Contains(neighbor))
                     continue;
 
                 visited.Add(neighbor);
