@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -21,10 +22,23 @@ public class Cube : MonoBehaviour, IPointerClickHandler
     public void Initialize(CubeType type, int x, int y, GridGenerator board)
     {
         Type = type;
+        this.board = board;
+        SetGridPosition(x, y);
+        GetComponent<SpriteRenderer>().color = GetColor(type);
+    }
+
+    public void SetGridPosition(int x, int y)
+    {
         X = x;
         Y = y;
-        this.board = board;
-        GetComponent<SpriteRenderer>().color = GetColor(type);
+        name = $"Cube_{x}_{y}";
+    }
+
+    public Tween MoveTo(Vector3 localPosition, float duration)
+    {
+        return transform.DOLocalMove(localPosition, duration)
+            .SetEase(Ease.InQuad)
+            .SetLink(gameObject);
     }
 
     public void OnPointerClick(PointerEventData eventData)
