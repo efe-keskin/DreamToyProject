@@ -7,11 +7,11 @@ public class RocketRocketCombo : Combo
     {
     }
 
-    public override Sequence Play(GridGenerator board, ExplosionService explosions, int x, int y)
+    public override Sequence Play(GridGenerator board, ExplosionService explosions, DamageTransaction transaction, int x, int y)
     {
         Sequence explosion = DOTween.Sequence();
-        RocketBeam.AddPair(explosion, board, explosions, x, y, Vector2Int.right, sprite, color);
-        RocketBeam.AddPair(explosion, board, explosions, x, y, Vector2Int.up, sprite, color);
+        RocketBeam.AddPair(explosion, board, explosions, transaction, x, y, Vector2Int.right, sprite, color);
+        RocketBeam.AddPair(explosion, board, explosions, transaction, x, y, Vector2Int.up, sprite, color);
         return explosion;
     }
 }
