@@ -15,6 +15,8 @@ public class GridGenerator : MonoBehaviour
 
     public int MovesRemaining { get; private set; }
 
+    public event System.Action<int> MovesChanged;
+
     private Cube[,] cubes;
     private bool isBusy;
 
@@ -23,9 +25,13 @@ public class GridGenerator : MonoBehaviour
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
     };
 
-    void Start()
+    void Awake()
     {
         MovesRemaining = startingMoves;
+    }
+
+    void Start()
+    {
         cubes = new Cube[width, height];
 
         for (int x = 0; x < width; x++)
@@ -46,6 +52,7 @@ public class GridGenerator : MonoBehaviour
 
         MovesRemaining--;
         Debug.Log($"Moves remaining: {MovesRemaining}");
+        MovesChanged?.Invoke(MovesRemaining);
 
         foreach (Cube member in group)
             RemoveCube(member);
