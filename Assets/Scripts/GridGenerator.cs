@@ -9,8 +9,11 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private float fallDuration = 0.3f;
+    [SerializeField] private int startingMoves = 20;
 
     private const int MinGroupSize = 2;
+
+    public int MovesRemaining { get; private set; }
 
     private Cube[,] cubes;
     private bool isBusy;
@@ -22,6 +25,7 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
+        MovesRemaining = startingMoves;
         cubes = new Cube[width, height];
 
         for (int x = 0; x < width; x++)
@@ -33,12 +37,15 @@ public class GridGenerator : MonoBehaviour
 
     public void OnCubeClicked(Cube cube)
     {
-        if (isBusy)
+        if (isBusy || MovesRemaining <= 0)
             return;
 
         List<Cube> group = FindGroup(cube);
         if (group.Count < MinGroupSize)
             return;
+
+        MovesRemaining--;
+        Debug.Log($"Moves remaining: {MovesRemaining}");
 
         foreach (Cube member in group)
             RemoveCube(member);
