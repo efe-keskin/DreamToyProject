@@ -21,14 +21,14 @@ public class Rocket : SpecialItem
             : new Vector3(scale.x * 0.5f, scale.y, scale.z);
     }
 
-    public override Sequence Explode(GridGenerator board, ExplosionService explosions)
+    public override Sequence Explode(GridGenerator board, ExplosionService explosions, DamageTransaction transaction)
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.enabled = false;
 
         Vector2Int axis = Orientation == RocketOrientation.Horizontal ? Vector2Int.right : Vector2Int.up;
         Sequence explosion = DOTween.Sequence();
-        RocketBeam.AddPair(explosion, board, explosions, X, Y, axis, spriteRenderer.sprite, spriteRenderer.color);
+        RocketBeam.AddPair(explosion, board, explosions, transaction, X, Y, axis, spriteRenderer.sprite, spriteRenderer.color);
         return explosion;
     }
 }

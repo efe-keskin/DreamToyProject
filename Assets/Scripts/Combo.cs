@@ -12,5 +12,5 @@ public abstract class Combo
         color = visualSource.color;
     }
 
-    public abstract Sequence Play(GridGenerator board, ExplosionService explosions, int x, int y);
+    public abstract Sequence Play(GridGenerator board, ExplosionService explosions, DamageTransaction transaction, int x, int y);
 }

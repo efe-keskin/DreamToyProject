@@ -8,6 +8,7 @@ public abstract class GridItem : MonoBehaviour, IPointerClickHandler
     public int Y { get; private set; }
 
     public virtual bool CanFall => true;
+    public virtual Vector2Int Size => Vector2Int.one;
 
     private GridGenerator board;
 

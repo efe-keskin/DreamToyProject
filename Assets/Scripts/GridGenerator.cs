@@ -10,6 +10,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private List<Vector2Int> vaseCells = new List<Vector2Int>();
     [SerializeField] private Stone stonePrefab;
     [SerializeField] private List<Vector2Int> stoneCells = new List<Vector2Int>();
+    [SerializeField] private ChaliceBox chaliceBoxPrefab;
+    [SerializeField] private List<Vector2Int> chaliceBoxBottomLeftCells = new List<Vector2Int>();
     [SerializeField] private int width = 6;
     [SerializeField] private int height = 6;
     [SerializeField] private float spacing = 1.1f;
@@ -47,11 +49,17 @@ public class GridGenerator : MonoBehaviour
     {
         items = new GridItem[width, height];
 
+        foreach (Vector2Int bottomLeft in chaliceBoxBottomLeftCells)
+            CreateChaliceBox(bottomLeft.x, bottomLeft.y);
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 Vector2Int cell = new Vector2Int(x, y);
+
+                if (items[x, y] != null)
+                    continue;
 
                 if (vaseCells.Contains(cell))
                     CreateObstacle(vasePrefab, x, y);
@@ -131,42 +139,58 @@ public class GridGenerator : MonoBehaviour
         return new Vector3(x * spacing - offsetX, y * spacing - offsetY, 0f);
     }
 
-    public void ClearCell(GridItem item)
+    public void ClearCells(GridItem item)
     {
-        if (items[item.X, item.Y] == item)
-            items[item.X, item.Y] = null;
+        for (int dx = 0; dx < item.Size.x; dx++)
+        {
+            for (int dy = 0; dy < item.Size.y; dy++)
+            {
+                if (GetItem(item.X + dx, item.Y + dy) == item)
+                    items[item.X + dx, item.Y + dy] = null;
+            }
+        }
     }
 
     public void RemoveItem(GridItem item)
     {
-        ClearCell(item);
+        ClearCells(item);
         Destroy(item.gameObject);
     }
 
-    public void DamageObstacle(Obstacle obstacle, DamageSource source)
+    public void RemoveIfCleared(Obstacle obstacle)
     {
-        if (!obstacle.CanTakeDamageFrom(source))
-            return;
-
-        if (obstacle.TakeDamage())
+        if (obstacle.IsCleared)
             RemoveItem(obstacle);
     }
 
     private void DamageAdjacentObstacles(List<Cube> group)
     {
-        HashSet<Obstacle> adjacentObstacles = new HashSet<Obstacle>();
+        Dictionary<Obstacle, int> adjacentCubeCounts = new Dictionary<Obstacle, int>();
 
         foreach (Cube cube in group)
         {
+            HashSet<Obstacle> touchedByThisCube = new HashSet<Obstacle>();
+
             foreach (Vector2Int direction in Directions)
             {
                 if (GetItem(cube.X + direction.x, cube.Y + direction.y) is Obstacle obstacle)
-                    adjacentObstacles.Add(obstacle);
+                    touchedByThisCube.Add(obstacle);
+            }
+
+            foreach (Obstacle obstacle in touchedByThisCube)
+            {
+                adjacentCubeCounts.TryGetValue(obstacle, out int count);
+                adjacentCubeCounts[obstacle] = count + 1;
             }
         }
 
-        foreach (Obstacle obstacle in adjacentObstacles)
-            DamageObstacle(obstacle, DamageSource.Blast);
+        DamageTransaction transaction = new DamageTransaction(DamageSource.Blast);
+
+        foreach (KeyValuePair<Obstacle, int> entry in adjacentCubeCounts)
+        {
+            entry.Key.ReceiveBlast(transaction, entry.Value);
+            RemoveIfCleared(entry.Key);
+        }
     }
 
     private void CreateObstacle(Obstacle prefab, int x, int y)
@@ -175,6 +199,20 @@ public class GridGenerator : MonoBehaviour
         obstacle.transform.localPosition = GetLocalPosition(x, y);
         obstacle.AttachToBoard(this, x, y);
         items[x, y] = obstacle;
+    }
+
+    private void CreateChaliceBox(int x, int y)
+    {
+        ChaliceBox box = Instantiate(chaliceBoxPrefab, transform);
+        box.transform.localPosition = (GetLocalPosition(x, y) + GetLocalPosition(x + 1, y + 1)) / 2f;
+        box.transform.localScale = new Vector3(1f + spacing, 1f + spacing, 1f);
+        box.AttachToBoard(this, x, y);
+
+        for (int dx = 0; dx < box.Size.x; dx++)
+        {
+            for (int dy = 0; dy < box.Size.y; dy++)
+                items[x + dx, y + dy] = box;
+        }
     }
 
     private void SpendMove()
@@ -201,7 +239,7 @@ public class GridGenerator : MonoBehaviour
         BeginTransition();
 
         foreach (Cube member in group)
-            ClearCell(member);
+            ClearCells(member);
 
         specialItem.transform.localPosition = GetLocalPosition(x, y);
         specialItem.AttachToBoard(this, x, y);
