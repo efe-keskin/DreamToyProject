@@ -57,6 +57,8 @@ public class ExplosionService
 
         if (target is SpecialItem special)
             Trigger(special);
+        else if (target is Obstacle obstacle)
+            board.DamageObstacle(obstacle, DamageSource.SpecialItem);
         else
             board.RemoveItem(target);
     }
