@@ -6,21 +6,21 @@ public static class RocketBeam
     private const float SecondsPerCell = 0.05f;
 
     public static void AddPair(Sequence sequence, GridGenerator board, ExplosionService explosions, DamageTransaction transaction,
-        int originX, int originY, Vector2Int axis, Sprite sprite, Color color)
+        int originX, int originY, Vector2Int axis, Rocket source)
     {
         if (!board.IsInside(originX, originY))
             return;
 
         sequence.InsertCallback(0f, () => explosions.DamageCell(originX, originY, transaction));
-        AddHalf(sequence, board, explosions, transaction, originX, originY, axis, sprite, color);
-        AddHalf(sequence, board, explosions, transaction, originX, originY, -axis, sprite, color);
+        AddHalf(sequence, board, explosions, transaction, originX, originY, axis, source);
+        AddHalf(sequence, board, explosions, transaction, originX, originY, -axis, source);
     }
 
     private static void AddHalf(Sequence sequence, GridGenerator board, ExplosionService explosions, DamageTransaction transaction,
-        int originX, int originY, Vector2Int direction, Sprite sprite, Color color)
+        int originX, int originY, Vector2Int direction, Rocket source)
     {
-        Vector3 scale = direction.x != 0 ? new Vector3(1f, 0.5f, 1f) : new Vector3(0.5f, 1f, 1f);
-        Transform half = EffectSprite.Create(board, sprite, color, board.GetLocalPosition(originX, originY), scale).transform;
+        Sprite sprite = source.GetHalfSprite(direction);
+        Transform half = EffectSprite.Create(board, sprite, Color.white, board.GetLocalPosition(originX, originY), Vector3.one).transform;
 
         int steps = 0;
         int x = originX + direction.x;
