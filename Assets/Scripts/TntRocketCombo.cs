@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class TntRocketCombo : Combo
 {
-    public TntRocketCombo(SpriteRenderer visualSource) : base(visualSource)
+    private readonly Rocket rocket;
+
+    public TntRocketCombo(Rocket rocket)
     {
+        this.rocket = rocket;
     }
 
     public override Sequence Play(GridGenerator board, ExplosionService explosions, DamageTransaction transaction, int x, int y)
@@ -13,8 +16,8 @@ public class TntRocketCombo : Combo
 
         for (int offset = -1; offset <= 1; offset++)
         {
-            RocketBeam.AddPair(explosion, board, explosions, transaction, x, y + offset, Vector2Int.right, sprite, color);
-            RocketBeam.AddPair(explosion, board, explosions, transaction, x + offset, y, Vector2Int.up, sprite, color);
+            RocketBeam.AddPair(explosion, board, explosions, transaction, x, y + offset, Vector2Int.right, rocket);
+            RocketBeam.AddPair(explosion, board, explosions, transaction, x + offset, y, Vector2Int.up, rocket);
         }
 
         return explosion;

@@ -5,8 +5,13 @@ public class TntTntCombo : Combo
 {
     private const int Radius = 3;
 
-    public TntTntCombo(SpriteRenderer visualSource) : base(visualSource)
+    private readonly Sprite sprite;
+    private readonly Color color;
+
+    public TntTntCombo(SpriteRenderer visualSource)
     {
+        sprite = visualSource.sprite;
+        color = visualSource.color;
     }
 
     public override Sequence Play(GridGenerator board, ExplosionService explosions, DamageTransaction transaction, int x, int y)

@@ -13,8 +13,8 @@ public static class ComboFactory
             return new TntTntCombo(tnts[0].GetComponent<SpriteRenderer>());
 
         if (tnts.Count == 1)
-            return new TntRocketCombo(rockets[0].GetComponent<SpriteRenderer>());
+            return new TntRocketCombo(rockets[0]);
 
-        return new RocketRocketCombo(rockets[0].GetComponent<SpriteRenderer>());
+        return new RocketRocketCombo(rockets[0]);
     }
 }
