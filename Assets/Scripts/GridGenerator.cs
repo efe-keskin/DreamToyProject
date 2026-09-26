@@ -161,6 +161,9 @@ public class GridGenerator : MonoBehaviour
 
     public void RemoveItem(GridItem item)
     {
+        if (item is Cube cube)
+            hints.ClearGroup(FindCubeGroup(cube));
+
         ClearCells(item);
         Destroy(item.gameObject);
     }
@@ -326,7 +329,6 @@ public class GridGenerator : MonoBehaviour
     private void BeginTransition()
     {
         isBusy = true;
-        hints.Clear();
     }
 
     private void EndTransition()

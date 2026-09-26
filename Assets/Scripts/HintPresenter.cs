@@ -32,6 +32,12 @@ public class HintPresenter
         }
     }
 
+    public void ClearGroup(IEnumerable<Cube> group)
+    {
+        foreach (Cube member in group)
+            member.ShowHint(SpecialItemKind.None);
+    }
+
     public void Clear()
     {
         for (int x = 0; x < board.Width; x++)

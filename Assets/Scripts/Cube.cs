@@ -11,58 +11,71 @@ public enum CubeType
 [RequireComponent(typeof(SpriteRenderer))]
 public class Cube : GridItem
 {
+    [System.Serializable]
+    private struct CubeSprites
+    {
+        public CubeType type;
+        public Sprite normal;
+        public Sprite rocketHint;
+        public Sprite tntHint;
+    }
+
+    [SerializeField] private CubeSprites[] spriteSets;
+
     public CubeType Type { get; private set; }
 
-    private SpriteRenderer hintRenderer;
+    private SpriteRenderer body;
+    private CubeSprites sprites;
+
+    void Awake()
+    {
+        body = GetComponent<SpriteRenderer>();
+    }
 
     public void Initialize(CubeType type, int x, int y, GridGenerator board)
     {
         Type = type;
         AttachToBoard(board, x, y);
-        GetComponent<SpriteRenderer>().color = GetColor(type);
+        sprites = FindSprites(type);
+        body.color = Color.white;
+        ApplySprite(sprites.normal, "normal");
     }
 
     public void ShowHint(SpecialItemKind hint)
     {
-        if (hint == SpecialItemKind.None)
+        switch (hint)
         {
-            if (hintRenderer != null)
-                hintRenderer.enabled = false;
+            case SpecialItemKind.Rocket:
+                ApplySprite(sprites.rocketHint, "rocket hint");
+                break;
+            case SpecialItemKind.Tnt:
+                ApplySprite(sprites.tntHint, "TNT hint");
+                break;
+            default:
+                ApplySprite(sprites.normal, "normal");
+                break;
+        }
+    }
+
+    private CubeSprites FindSprites(CubeType type)
+    {
+        foreach (CubeSprites set in spriteSets)
+        {
+            if (set.type == type)
+                return set;
+        }
+
+        return default;
+    }
+
+    private void ApplySprite(Sprite sprite, string state)
+    {
+        if (sprite == null)
+        {
+            Debug.LogError($"Cube has no {state} sprite for {Type}. Add a {Type} entry with all three sprites to Sprite Sets on the cube prefab.", this);
             return;
         }
 
-        if (hintRenderer == null)
-            hintRenderer = CreateHintRenderer();
-
-        hintRenderer.enabled = true;
-        hintRenderer.color = hint == SpecialItemKind.Rocket ? Color.white : Color.black;
-        hintRenderer.transform.localScale = hint == SpecialItemKind.Rocket
-            ? new Vector3(0.6f, 0.2f, 1f)
-            : new Vector3(0.4f, 0.4f, 1f);
-    }
-
-    private SpriteRenderer CreateHintRenderer()
-    {
-        SpriteRenderer body = GetComponent<SpriteRenderer>();
-
-        GameObject hint = new GameObject("Hint");
-        hint.transform.SetParent(transform, false);
-
-        SpriteRenderer renderer = hint.AddComponent<SpriteRenderer>();
-        renderer.sprite = body.sprite;
-        renderer.sortingOrder = body.sortingOrder + 1;
-        return renderer;
-    }
-
-    private static Color GetColor(CubeType type)
-    {
-        switch (type)
-        {
-            case CubeType.Red: return Color.red;
-            case CubeType.Green: return Color.green;
-            case CubeType.Blue: return Color.blue;
-            case CubeType.Yellow: return Color.yellow;
-            default: return Color.white;
-        }
+        body.sprite = sprite;
     }
 }
