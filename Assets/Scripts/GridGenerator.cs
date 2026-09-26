@@ -21,6 +21,7 @@ public class GridGenerator : MonoBehaviour
     public int Height => height;
 
     public event System.Action<int> MovesChanged;
+    public event System.Action BoardSettled;
 
     private LevelData level;
     private int width;
@@ -29,6 +30,7 @@ public class GridGenerator : MonoBehaviour
     private ExplosionService explosions;
     private HintPresenter hints;
     private bool isBusy;
+    private bool inputDisabled;
 
     private static readonly Vector2Int[] Directions =
     {
@@ -62,9 +64,26 @@ public class GridGenerator : MonoBehaviour
         hints.Refresh();
     }
 
+    public bool HasRemainingObstacles()
+    {
+        foreach (GridItem item in items)
+        {
+            if (item is Obstacle)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void DisableInput()
+    {
+        inputDisabled = true;
+        hints.Clear();
+    }
+
     public void OnItemClicked(GridItem item)
     {
-        if (isBusy || MovesRemaining <= 0)
+        if (inputDisabled || isBusy || MovesRemaining <= 0)
             return;
 
         if (item is SpecialItem clickedSpecial)
@@ -314,6 +333,7 @@ public class GridGenerator : MonoBehaviour
     {
         isBusy = false;
         hints.Refresh();
+        BoardSettled?.Invoke();
     }
 
     private int CompactColumn(int x, Sequence transition)
