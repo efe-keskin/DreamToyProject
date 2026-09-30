@@ -17,10 +17,12 @@ public class GridGenerator : MonoBehaviour
     private const int MinGroupSize = 2;
 
     public int MovesRemaining { get; private set; }
+    public LevelGoals Goals { get; } = new LevelGoals();
     public int Width => width;
     public int Height => height;
 
     public event System.Action<int> MovesChanged;
+    public event System.Action BoardCreated;
     public event System.Action BoardSettled;
 
     private LevelData level;
@@ -62,6 +64,7 @@ public class GridGenerator : MonoBehaviour
         }
 
         hints.Refresh();
+        BoardCreated?.Invoke();
     }
 
     public bool HasRemainingObstacles()
@@ -168,8 +171,10 @@ public class GridGenerator : MonoBehaviour
         Destroy(item.gameObject);
     }
 
-    public void RemoveIfCleared(Obstacle obstacle)
+    public void ResolveObstacleHit(Obstacle obstacle)
     {
+        Goals.Refresh(obstacle);
+
         if (obstacle.IsCleared)
             RemoveItem(obstacle);
     }
@@ -200,7 +205,7 @@ public class GridGenerator : MonoBehaviour
         foreach (KeyValuePair<Obstacle, int> entry in adjacentCubeCounts)
         {
             entry.Key.ReceiveBlast(transaction, entry.Value);
-            RemoveIfCleared(entry.Key);
+            ResolveObstacleHit(entry.Key);
         }
     }
 
@@ -233,10 +238,10 @@ public class GridGenerator : MonoBehaviour
                 PlaceItem(specialItemFactory.CreateTnt(transform), x, y);
                 break;
             case LevelTokens.Stone:
-                PlaceItem(Instantiate(stonePrefab, transform), x, y);
+                PlaceObstacle(Instantiate(stonePrefab, transform), x, y);
                 break;
             case LevelTokens.Vase:
-                PlaceItem(Instantiate(vasePrefab, transform), x, y);
+                PlaceObstacle(Instantiate(vasePrefab, transform), x, y);
                 break;
             case LevelTokens.ChaliceBoxBottomLeft:
                 CreateChaliceBox(x, y);
@@ -251,6 +256,12 @@ public class GridGenerator : MonoBehaviour
         items[x, y] = item;
     }
 
+    private void PlaceObstacle(Obstacle obstacle, int x, int y)
+    {
+        PlaceItem(obstacle, x, y);
+        Goals.Register(obstacle);
+    }
+
     private void CreateChaliceBox(int x, int y)
     {
         ChaliceBox box = Instantiate(chaliceBoxPrefab, transform);
@@ -263,6 +274,8 @@ public class GridGenerator : MonoBehaviour
             for (int dy = 0; dy < box.Size.y; dy++)
                 items[x + dx, y + dy] = box;
         }
+
+        Goals.Register(box);
     }
 
     private void SpendMove()

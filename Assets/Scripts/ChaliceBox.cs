@@ -22,6 +22,8 @@ public class ChaliceBox : Obstacle
     public override bool CanFall => false;
     public override Vector2Int Size => new Vector2Int(2, 2);
     public override bool IsCleared => ChalicesCollected >= ChaliceGoal;
+    public override GoalType GoalType => GoalType.Chalice;
+    public override int RemainingGoalCount => ChaliceGoal - ChalicesCollected;
 
     protected override int MaxHealth => doorHealth;
 

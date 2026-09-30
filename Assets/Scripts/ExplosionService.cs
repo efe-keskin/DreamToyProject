@@ -64,7 +64,7 @@ public class ExplosionService
         else if (target is Obstacle obstacle)
         {
             obstacle.ReceiveSpecialHit(transaction, new Vector2Int(x, y));
-            board.RemoveIfCleared(obstacle);
+            board.ResolveObstacleHit(obstacle);
         }
         else
         {

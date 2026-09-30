@@ -6,6 +6,8 @@ public class Vase : Obstacle
 {
     [SerializeField] private Sprite damagedSprite;
 
+    public override GoalType GoalType => GoalType.Vase;
+
     protected override int MaxHealth => 2;
 
     protected override void OnDamaged()
