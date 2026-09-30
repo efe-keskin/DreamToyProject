@@ -6,6 +6,10 @@ public abstract class Obstacle : GridItem
 
     public virtual bool IsCleared => Health <= 0;
 
+    public abstract GoalType GoalType { get; }
+
+    public virtual int RemainingGoalCount => IsCleared ? 0 : 1;
+
     protected abstract int MaxHealth { get; }
 
     protected virtual void Awake()

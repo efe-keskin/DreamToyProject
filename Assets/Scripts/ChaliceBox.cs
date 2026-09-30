@@ -12,9 +12,8 @@ public class ChaliceBox : Obstacle
 {
     public const int ChaliceGoal = 10;
 
-    private static readonly Color ChalicePhaseColor = new Color(1f, 0.84f, 0f);
-
     [SerializeField] private int doorHealth = 1;
+    [SerializeField] private Sprite openSprite;
 
     public int ChalicesCollected { get; private set; }
 
@@ -23,6 +22,8 @@ public class ChaliceBox : Obstacle
     public override bool CanFall => false;
     public override Vector2Int Size => new Vector2Int(2, 2);
     public override bool IsCleared => ChalicesCollected >= ChaliceGoal;
+    public override GoalType GoalType => GoalType.Chalice;
+    public override int RemainingGoalCount => ChaliceGoal - ChalicesCollected;
 
     protected override int MaxHealth => doorHealth;
 
@@ -45,7 +46,7 @@ public class ChaliceBox : Obstacle
     protected override void OnDamaged()
     {
         if (Phase == ChaliceBoxPhase.Chalice)
-            GetComponent<SpriteRenderer>().color = ChalicePhaseColor;
+            GetComponent<SpriteRenderer>().sprite = openSprite;
 
         Punch();
     }

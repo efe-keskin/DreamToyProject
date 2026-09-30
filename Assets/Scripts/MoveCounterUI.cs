@@ -23,6 +23,6 @@ public class MoveCounterUI : MonoBehaviour
 
     private void UpdateText(int moves)
     {
-        movesText.text = $"Moves: {moves}";
+        movesText.text = moves.ToString();
     }
 }
