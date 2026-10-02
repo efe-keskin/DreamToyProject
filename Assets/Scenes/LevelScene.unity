@@ -2534,6 +2534,8 @@ MonoBehaviour:
   chaliceBoxPrefab: {fileID: 2850371299559589301, guid: 4d7aac24e9bdf4e0abd7f109a030166f, type: 3}
   spacing: 1.1
   fallDuration: 0.3
+  fallBounceHeight: 0.1
+  fallBounceDuration: 0.16
   mergeDuration: 0.2
   appearDuration: 0.15
 --- !u!4 &1968818127

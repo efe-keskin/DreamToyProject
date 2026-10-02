@@ -34,6 +34,18 @@ public abstract class GridItem : MonoBehaviour, IPointerClickHandler
             .SetLink(gameObject);
     }
 
+    public Tween FallTo(Vector3 localPosition, float duration, float bounceHeight, float bounceDuration)
+    {
+        if (bounceHeight <= 0f || bounceDuration <= 0f)
+            return MoveTo(localPosition, duration);
+
+        return DOTween.Sequence()
+            .Append(transform.DOLocalMove(localPosition, duration).SetEase(Ease.InQuad))
+            .Append(transform.DOLocalMoveY(localPosition.y + bounceHeight, bounceDuration * 0.5f).SetEase(Ease.OutQuad))
+            .Append(transform.DOLocalMoveY(localPosition.y, bounceDuration * 0.5f).SetEase(Ease.InQuad))
+            .SetLink(gameObject);
+    }
+
     public Tween PlayAppear(float duration)
     {
         Vector3 targetScale = transform.localScale;
