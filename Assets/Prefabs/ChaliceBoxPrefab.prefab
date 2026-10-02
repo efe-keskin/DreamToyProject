@@ -153,3 +153,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChaliceBox
   doorHealth: 1
   openSprite: {fileID: 21300000, guid: 7a49af1824d564a19b42da4e2c040c68, type: 3}
+  chaliceSprite: {fileID: -181104677851366788, guid: d6890fd4b7ed74823bd78818b793e2ad, type: 3}
+  doorFragments:
+  - {fileID: 1452857463581040857, guid: 23c08e05ce88b445db426a7fc1b05138, type: 3}
+  - {fileID: -3734815318763610706, guid: e11ec55d754464b1f91c551a5ce9bf2e, type: 3}
+  - {fileID: 1587601489177917366, guid: a1bd2ecbd349f4fe5a3d5bb95c93ca31, type: 3}
+  - {fileID: 2291987453466907406, guid: fc6502ef847014d9ca412de043ef39ce, type: 3}
+  - {fileID: -6253719457004036166, guid: fc2228d1461d448349fd64f902676851, type: 3}
+  - {fileID: -1563582140481139095, guid: 8dea9bc68cf464d5eb5fbd6237197e6d, type: 3}
+  - {fileID: 3658262366090827233, guid: 21aef6129c0b74c84a4d59e3ff2a36cc, type: 3}
+  - {fileID: -4331240356581166131, guid: d06f72a59fe71497f9deacd349f8732e, type: 3}
+  - {fileID: 9210670616763497589, guid: 7b5e39398a0dc4c469e17334b611cb2a, type: 3}
+  - {fileID: -1156461269830941494, guid: 13cfcd8f9dcec4d0e9bc5b4126f49626, type: 3}
+  baseFragments:
+  - {fileID: 6770140360960781578, guid: 089780951152a4f9db400d2f2bcc1bf6, type: 3}
+  - {fileID: 2613862393637530711, guid: 5a1968b2a932a4261af1802688be3348, type: 3}
+  - {fileID: 8656253850458309695, guid: 1b9eab8880ec246b68a0a71d4f43d905, type: 3}
+  - {fileID: -6503174540981057365, guid: e3ca8193e86cc44e5ad4c62727f82d7d, type: 3}
+  - {fileID: -4290281367078989091, guid: edca169a463714645823a8cf1f30139e, type: 3}
+  dustSprite: {fileID: 21300000, guid: 3b9229576fa044ff8959433fecb77799, type: 3}
+  sparkleSprite: {fileID: 21300000, guid: e4517600253af44399c7950c97cdc9ca, type: 3}
+  sparkleMaterial: {fileID: 2100000, guid: 9097a59b2eec49438d454e7368841eda, type: 2}

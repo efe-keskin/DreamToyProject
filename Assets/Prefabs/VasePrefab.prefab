@@ -152,3 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Vase
   damagedSprite: {fileID: 21300000, guid: da3aab70d956646c0b55b299479831d0, type: 3}
+  fragmentSprites:
+  - {fileID: 4095080387558074076, guid: 5859dd945680f48f8b005b8ee65eea9f, type: 3}
+  - {fileID: 6406247513108631659, guid: 4f61c453a70634466b7aeb306cfa2275, type: 3}
+  - {fileID: -2350886445216773880, guid: aebb63f35f7954cce81468f607e571df, type: 3}
+  dustSprite: {fileID: 21300000, guid: 3b9229576fa044ff8959433fecb77799, type: 3}
