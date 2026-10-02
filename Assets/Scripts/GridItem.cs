@@ -10,6 +10,8 @@ public abstract class GridItem : MonoBehaviour, IPointerClickHandler
     public virtual bool CanFall => true;
     public virtual Vector2Int Size => Vector2Int.one;
 
+    protected GridGenerator Board => board;
+
     private GridGenerator board;
 
     public void AttachToBoard(GridGenerator board, int x, int y)
@@ -39,6 +41,10 @@ public abstract class GridItem : MonoBehaviour, IPointerClickHandler
         return transform.DOScale(targetScale, duration)
             .SetEase(Ease.OutBack)
             .SetLink(gameObject);
+    }
+
+    public virtual void PlayBreakEffect()
+    {
     }
 
     public void OnPointerClick(PointerEventData eventData)

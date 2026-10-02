@@ -168,6 +168,7 @@ public class GridGenerator : MonoBehaviour
             hints.ClearGroup(FindCubeGroup(cube));
 
         ClearCells(item);
+        item.PlayBreakEffect();
         Destroy(item.gameObject);
     }
 

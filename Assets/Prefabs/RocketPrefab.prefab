@@ -157,3 +157,37 @@ MonoBehaviour:
   rightHalfSprite: {fileID: 21300000, guid: f755516c1843049f0a8e88cd8c77d433, type: 3}
   topHalfSprite: {fileID: 21300000, guid: 29ccb7942f2f04990a759a64c2377b72, type: 3}
   bottomHalfSprite: {fileID: 21300000, guid: 7e3e1d6ed99cb481fbcd3bf77767e0f6, type: 3}
+  starSprite: {fileID: 21300000, guid: e4517600253af44399c7950c97cdc9ca, type: 3}
+  smokeSprite: {fileID: 21300000, guid: 3b9229576fa044ff8959433fecb77799, type: 3}
+  beamSprite: {fileID: 8543918897373044191, guid: 7e67a77f6fe414e62a6f9ae517c23608, type: 3}
+  beamMaterial: {fileID: 2100000, guid: b3f6ac91daab4c09ac33c27d24391557, type: 2}
+  particleMaterial: {fileID: 2100000, guid: 9097a59b2eec49438d454e7368841eda, type: 2}
+  trailSettings:
+    beamFadeDuration: 0.15
+    coreWidth: 0.17
+    coreColor: {r: 1, g: 0.98, b: 0.3, a: 1}
+    coreAlpha: 0.75
+    starSpacing: {x: 0.045, y: 0.065}
+    starSize: {x: 0.13, y: 0.21}
+    starLifetime: {x: 0.4, y: 0.5}
+    starColor: {r: 1, g: 0.99, b: 0.94, a: 1}
+    starAccentColor: {r: 1, g: 0.99607843, b: 0.2627451, a: 1}
+    starAccentChance: 0.3
+    starLateralSpread: 0.24
+    starMaxBackDrift: 0.01
+    starMaxSideDrift: 0.02
+    starMaxSpin: 120
+    starEndScale: 0.9
+    starFadeStart: 0.75
+    smokeEnabled: 1
+    smokeSpacing: {x: 0.05, y: 0.07}
+    smokeSize: {x: 0.65, y: 0.8}
+    smokeLifetime: {x: 0.45, y: 0.55}
+    smokeAlpha: {x: 0.45, y: 0.6}
+    smokeColor: {r: 1, g: 0.94, b: 0.02, a: 1}
+    smokeLateralJitter: 0.09
+    smokeSizeVariation: 0.15
+    smokeAlphaVariation: 0.15
+    smokeMaxSpin: 30
+    smokeEndScale: 1
+    smokeFadeStart: 0.65
