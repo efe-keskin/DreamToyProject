@@ -156,15 +156,19 @@ MonoBehaviour:
     normal: {fileID: 21300000, guid: 997364f1baf17472b8d0928364adad51, type: 3}
     rocketHint: {fileID: 21300000, guid: 803b3558c32a64668a7910b1756f88fc, type: 3}
     tntHint: {fileID: 21300000, guid: 5d182e6167335482b9223c2eebab88de, type: 3}
+    particle: {fileID: 8635282560227039426, guid: 48f53a339704e425398fdcd30d75a64d, type: 3}
   - type: 1
     normal: {fileID: 21300000, guid: a5b2e04aa0427473890409f06de92b5c, type: 3}
     rocketHint: {fileID: 21300000, guid: d5bbc50d3a9be446486e796bb054ff2c, type: 3}
     tntHint: {fileID: 21300000, guid: f9a114697b66f41cdbc452e6fd2826f3, type: 3}
+    particle: {fileID: 3823634399010047068, guid: 29130dbcbf9fe499f8030568e37631c8, type: 3}
   - type: 2
     normal: {fileID: 21300000, guid: d209f54187dd84d7e8b9f3423fde5d7a, type: 3}
     rocketHint: {fileID: 21300000, guid: eb57ee3bb1819427cbfe97e11d64f548, type: 3}
     tntHint: {fileID: 21300000, guid: ff439b5177f39426686d00e58442bd69, type: 3}
+    particle: {fileID: -600494540707355758, guid: 3342568286f084074ac934baa21856c1, type: 3}
   - type: 3
     normal: {fileID: 21300000, guid: e2cea27fbb3ae40519398c36b0b1d55d, type: 3}
     rocketHint: {fileID: 21300000, guid: 7d89c6968f35a4e3cb8a75fc4b4cbfeb, type: 3}
     tntHint: {fileID: 21300000, guid: 0b15adb63024c4e39beeaa1083ed69d0, type: 3}
+    particle: {fileID: 6910005400417552955, guid: 88317c76a1a174b46b4666eeb6fcd231, type: 3}

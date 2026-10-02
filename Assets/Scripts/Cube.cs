@@ -18,6 +18,7 @@ public class Cube : GridItem
         public Sprite normal;
         public Sprite rocketHint;
         public Sprite tntHint;
+        public Sprite particle;
     }
 
     [SerializeField] private CubeSprites[] spriteSets;
@@ -55,6 +56,17 @@ public class Cube : GridItem
                 ApplySprite(sprites.normal, "normal");
                 break;
         }
+    }
+
+    public override void PlayBreakEffect()
+    {
+        if (sprites.particle == null)
+        {
+            Debug.LogError($"Cube has no particle sprite for {Type}. Add it to the {Type} entry in Sprite Sets on the cube prefab.", this);
+            return;
+        }
+
+        DebrisBurst.Play(Board, transform.localPosition, body.sprite.bounds.size.x, sprites.particle);
     }
 
     private CubeSprites FindSprites(CubeType type)

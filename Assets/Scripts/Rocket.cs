@@ -15,8 +15,20 @@ public class Rocket : SpecialItem
     [SerializeField] private Sprite rightHalfSprite;
     [SerializeField] private Sprite topHalfSprite;
     [SerializeField] private Sprite bottomHalfSprite;
+    [SerializeField] private Sprite starSprite;
+    [SerializeField] private Sprite smokeSprite;
+    [SerializeField] private Sprite beamSprite;
+    [SerializeField] private Material beamMaterial;
+    [SerializeField] private Material particleMaterial;
+    [SerializeField] private RocketTrailSettings trailSettings = new RocketTrailSettings();
 
     public RocketOrientation Orientation { get; private set; }
+    public Sprite StarSprite => starSprite;
+    public Sprite SmokeSprite => smokeSprite;
+    public Sprite BeamSprite => beamSprite;
+    public Material BeamMaterial => beamMaterial;
+    public Material ParticleMaterial => particleMaterial;
+    public RocketTrailSettings TrailSettings => trailSettings;
 
     public void SetOrientation(RocketOrientation orientation)
     {

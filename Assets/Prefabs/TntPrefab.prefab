@@ -151,3 +151,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20dbc0b08db2c4bdab7d088a1b6e34d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tnt
+  vfxSettings:
+    burstSprite: {fileID: 21300000, guid: 8d5d28369674e42a49d872caf0044c82, type: 3}
+    smokeSprite: {fileID: 21300000, guid: 3b9229576fa044ff8959433fecb77799, type: 3}
+    raySprite: {fileID: 8543918897373044191, guid: 7e67a77f6fe414e62a6f9ae517c23608, type: 3}
+    additiveMaterial: {fileID: 2100000, guid: 9097a59b2eec49438d454e7368841eda, type: 2}
+    rayMaterial: {fileID: 2100000, guid: ab81fc44b4eb4f8298699b37e943ed10, type: 2}
+    flashSize: 6
+    flashDuration: 0.36
+    flashColor: {r: 1, g: 0.99, b: 0.68, a: 1}
+    plumeCount: 18
+    plumeRadius: 0.75
+    plumeSize: {x: 1.5, y: 2}
+    plumeLifetime: {x: 0.32, y: 0.52}
+    plumeAlpha: {x: 0.85, y: 1}
+    plumeColor: {r: 1, g: 0.95, b: 0.02, a: 1}
+    rayCount: 15
+    rayLength: {x: 0.9, y: 1.9}
+    rayWidth: {x: 0.05, y: 0.095}
+    rayLifetime: {x: 0.35, y: 0.5}
+    rayColor: {r: 1, g: 1, b: 0.96, a: 1}
+    smokeCount: 6
+    smokeSize: {x: 0.65, y: 1.05}
+    smokeLifetime: {x: 0.35, y: 0.5}
+    smokeAlpha: 0.18

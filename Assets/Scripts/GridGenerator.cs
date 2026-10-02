@@ -11,6 +11,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private ChaliceBox chaliceBoxPrefab;
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private float fallDuration = 0.3f;
+    [SerializeField, Min(0f)] private float fallBounceHeight = 0.1f;
+    [SerializeField, Min(0f)] private float fallBounceDuration = 0.16f;
     [SerializeField] private float mergeDuration = 0.2f;
     [SerializeField] private float appearDuration = 0.15f;
 
@@ -168,6 +170,7 @@ public class GridGenerator : MonoBehaviour
             hints.ClearGroup(FindCubeGroup(cube));
 
         ClearCells(item);
+        item.PlayBreakEffect();
         Destroy(item.gameObject);
     }
 
@@ -328,7 +331,7 @@ public class GridGenerator : MonoBehaviour
     private void ApplyGravityAndRefill()
     {
         BeginTransition();
-        Sequence transition = DOTween.Sequence();
+        Sequence transition = DOTween.Sequence().SetLink(gameObject);
 
         for (int x = 0; x < width; x++)
         {
@@ -372,7 +375,7 @@ public class GridGenerator : MonoBehaviour
                 items[x, targetY] = item;
                 items[x, y] = null;
                 item.SetGridPosition(x, targetY);
-                transition.Join(item.MoveTo(GetLocalPosition(x, targetY), fallDuration));
+                transition.Join(item.FallTo(GetLocalPosition(x, targetY), fallDuration, spacing * fallBounceHeight, fallBounceDuration));
             }
 
             targetY++;
@@ -387,7 +390,7 @@ public class GridGenerator : MonoBehaviour
         {
             int spawnY = height + (y - firstEmptyY);
             Cube cube = CreateCube(x, y, GetLocalPosition(x, spawnY), RandomCubeType());
-            transition.Join(cube.MoveTo(GetLocalPosition(x, y), fallDuration));
+            transition.Join(cube.FallTo(GetLocalPosition(x, y), fallDuration, spacing * fallBounceHeight, fallBounceDuration));
         }
     }
 

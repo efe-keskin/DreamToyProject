@@ -21,6 +21,7 @@ public static class RocketBeam
     {
         Sprite sprite = source.GetHalfSprite(direction);
         Transform half = EffectSprite.Create(board, sprite, Color.white, board.GetLocalPosition(originX, originY), Vector3.one).transform;
+        half.gameObject.AddComponent<RocketTrail>().Initialize(board, direction, source);
 
         int steps = 0;
         int x = originX + direction.x;
