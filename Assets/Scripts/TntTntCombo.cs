@@ -7,11 +7,13 @@ public class TntTntCombo : Combo
 
     private readonly Sprite sprite;
     private readonly Color color;
+    private readonly TntVfxSettings vfxSettings;
 
     public TntTntCombo(SpriteRenderer visualSource)
     {
         sprite = visualSource.sprite;
         color = visualSource.color;
+        vfxSettings = visualSource.GetComponent<Tnt>().VfxSettings;
     }
 
     public override Sequence Play(GridGenerator board, ExplosionService explosions, DamageTransaction transaction, int x, int y)
@@ -20,9 +22,13 @@ public class TntTntCombo : Combo
         Sequence explosion = DOTween.Sequence();
 
         explosion.Append(blast.transform.DOScale(2f, 0.15f).SetEase(Ease.OutQuad));
-        explosion.AppendCallback(() => explosions.DamageArea(x, y, Radius, transaction));
-        explosion.Append(blast.transform.DOScale(5f, 0.25f).SetEase(Ease.OutQuad));
-        explosion.Join(blast.DOFade(0f, 0.25f));
+        explosion.AppendCallback(() =>
+        {
+            blast.enabled = false;
+            TntExplosionEffect.Play(board, blast.transform.localPosition, vfxSettings, 1.4f);
+            explosions.DamageArea(x, y, Radius, transaction);
+        });
+        explosion.AppendInterval(0.25f);
         explosion.AppendCallback(() => Object.Destroy(blast.gameObject));
 
         return explosion;
