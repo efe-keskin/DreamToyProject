@@ -47,14 +47,14 @@ public class LevelSceneController : MonoBehaviour
 
 #if UNITY_EDITOR
     [ContextMenu("Debug/Force Win")]
-    private void DebugForceWin()
+    public void DebugForceWin()
     {
         if (!resultShown)
             Win();
     }
 
     [ContextMenu("Debug/Force Lose")]
-    private void DebugForceLose()
+    public void DebugForceLose()
     {
         if (!resultShown)
             Lose();
