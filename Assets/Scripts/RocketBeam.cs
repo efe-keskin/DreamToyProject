@@ -39,6 +39,40 @@ public static class RocketBeam
 
         float travelDuration = (steps + 1) * SecondsPerCell;
         sequence.Insert(0f, half.DOLocalMove(board.GetLocalPosition(x, y), travelDuration).SetEase(Ease.Linear));
-        sequence.InsertCallback(travelDuration, () => Object.Destroy(half.gameObject));
+        sequence.InsertCallback(travelDuration, () => ContinueOutsideBoard(board, half, direction));
+    }
+
+    private static void ContinueOutsideBoard(GridGenerator board, Transform half, Vector2Int direction)
+    {
+        if (half == null)
+            return;
+
+        Camera camera = Camera.main;
+        if (camera == null || board == null)
+        {
+            Object.Destroy(half.gameObject);
+            return;
+        }
+
+        Vector3 viewportEdge = camera.WorldToViewportPoint(half.position);
+        if (direction.x != 0)
+            viewportEdge.x = direction.x > 0 ? 1f : 0f;
+        else
+            viewportEdge.y = direction.y > 0 ? 1f : 0f;
+
+        Vector3 localEdge = board.transform.InverseTransformPoint(camera.ViewportToWorldPoint(viewportEdge));
+        Vector3 forward = new Vector3(direction.x, direction.y, 0f);
+        float cellSize = board.GetLocalPosition(1, 0).x - board.GetLocalPosition(0, 0).x;
+        float distance = Mathf.Max(0f, Vector3.Dot(localEdge - half.localPosition, forward) + cellSize);
+        if (distance <= 0f)
+        {
+            Object.Destroy(half.gameObject);
+            return;
+        }
+
+        half.DOLocalMove(half.localPosition + forward * distance, distance / cellSize * SecondsPerCell)
+            .SetEase(Ease.Linear)
+            .SetLink(half.gameObject)
+            .OnComplete(() => Object.Destroy(half.gameObject));
     }
 }
