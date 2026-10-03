@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum CubeType
 {
@@ -8,13 +9,14 @@ public enum CubeType
     Yellow
 }
 
-[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(SpriteRenderer), typeof(SortingGroup))]
 public class Cube : GridItem
 {
     [System.Serializable]
     private struct CubeSprites
     {
         public CubeType type;
+        public Sprite body;
         public Sprite normal;
         public Sprite rocketHint;
         public Sprite tntHint;
@@ -22,6 +24,7 @@ public class Cube : GridItem
     }
 
     [SerializeField] private CubeSprites[] spriteSets;
+    [SerializeField] private SpriteRenderer symbol;
 
     public CubeType Type { get; private set; }
 
@@ -39,7 +42,15 @@ public class Cube : GridItem
         AttachToBoard(board, x, y);
         sprites = FindSprites(type);
         body.color = Color.white;
-        ApplySprite(sprites.normal, "normal");
+        body.sprite = sprites.body;
+        symbol.color = Color.white;
+        symbol.sortingLayerID = body.sortingLayerID;
+        symbol.sortingOrder = body.sortingOrder + 1;
+
+        if (sprites.body == null)
+            Debug.LogError($"Cube has no body sprite for {Type}. Add it to the {Type} entry in Sprite Sets on the cube prefab.", this);
+
+        ShowHint(SpecialItemKind.None);
     }
 
     public void ShowHint(SpecialItemKind hint)
@@ -47,13 +58,13 @@ public class Cube : GridItem
         switch (hint)
         {
             case SpecialItemKind.Rocket:
-                ApplySprite(sprites.rocketHint, "rocket hint");
+                ApplySymbol(sprites.rocketHint, "rocket hint");
                 break;
             case SpecialItemKind.Tnt:
-                ApplySprite(sprites.tntHint, "TNT hint");
+                ApplySymbol(sprites.tntHint, "TNT hint");
                 break;
             default:
-                ApplySprite(sprites.normal, "normal");
+                ApplySymbol(sprites.normal, "normal");
                 break;
         }
     }
@@ -80,14 +91,12 @@ public class Cube : GridItem
         return default;
     }
 
-    private void ApplySprite(Sprite sprite, string state)
+    private void ApplySymbol(Sprite sprite, string state)
     {
-        if (sprite == null)
-        {
-            Debug.LogError($"Cube has no {state} sprite for {Type}. Add a {Type} entry with all three sprites to Sprite Sets on the cube prefab.", this);
-            return;
-        }
+        symbol.sprite = sprite;
+        symbol.enabled = sprite != null;
 
-        body.sprite = sprite;
+        if (sprite == null)
+            Debug.LogError($"Cube has no {state} symbol for {Type}. Add it to the {Type} entry in Sprite Sets on the cube prefab.", this);
     }
 }
