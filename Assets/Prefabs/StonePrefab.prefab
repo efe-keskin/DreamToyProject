@@ -151,3 +151,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eab8d8010c3344010b85dd3f55bf3269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stone
+  fragmentSprites:
+  - {fileID: 4097111511846903190, guid: cdad9c76fbc7a4bd0b21f293fbefee2e, type: 3}
+  - {fileID: -2203629019558354351, guid: 40491929bb5c740edae8b40294d77286, type: 3}
+  - {fileID: 7798741131455143084, guid: e14e3799b9ee7466a852e43c78f5be68, type: 3}
+  dustSprite: {fileID: 21300000, guid: 3b9229576fa044ff8959433fecb77799, type: 3}
