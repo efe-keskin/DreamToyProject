@@ -27,18 +27,20 @@ public static class ChaliceBoxEffect
     }
 
     public static void Collect(GridGenerator board, Vector3 position, Sprite sprite, float startHeight,
-        Sprite sparkleSprite, Material sparkleMaterial, float direction, float delay)
+        Sprite sparkleSprite, Material sparkleMaterial, float delay)
     {
         if (sprite == null)
             return;
 
         float cell = CellSize(board);
-        Vector2 velocity = new Vector2(direction * Range(1.8f, 3.8f), Range(9f, 10.5f)) * cell;
+        float direction = random.Next(2) == 0 ? -1f : 1f;
+        Vector2 velocity = new Vector2(direction * Range(0.8f, 3.8f), Range(8f, 10.5f)) * cell;
         float gravity = 32f * cell;
-        float lifetime = Range(0.85f, 1f);
+        float lifetime = Range(0.9f, 1.1f);
         float startScale = startHeight / sprite.bounds.size.y;
         float scale = 0.7f * cell / sprite.bounds.size.y;
-        float spin = -direction * Range(280f, 420f);
+        float angle = Range(-18f, 18f);
+        float spin = Range(180f, 420f) * (random.Next(2) == 0 ? -1f : 1f);
         float nextSparkle = 0f;
         SpriteRenderer cup = EffectSprite.Create(board, sprite, Color.white, position, Vector3.one * startScale, 12);
 
@@ -48,7 +50,7 @@ public static class ChaliceBoxEffect
                 float grow = 1f - Mathf.Pow(1f - Mathf.Clamp01(time / 0.1f), 2f);
                 float fade = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.75f, 1f, progress));
                 cup.transform.localPosition = FlightPosition(position, velocity, gravity, time);
-                cup.transform.localRotation = Quaternion.Euler(0f, 0f, spin * time);
+                cup.transform.localRotation = Quaternion.Euler(0f, 0f, angle + spin * time);
                 cup.transform.localScale = Vector3.one * (Mathf.Lerp(startScale, scale, grow) * Mathf.Lerp(1f, 0.6f, fade));
                 cup.color = new Color(1f, 1f, 1f, 1f - fade);
 
