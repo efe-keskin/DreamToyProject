@@ -40,6 +40,36 @@ public class ComboFactoryTests
         }
     }
 
+    [Test]
+    public void ComboFactory_RejectsNullGroup()
+    {
+        ArgumentNullException error = Assert.Throws<ArgumentNullException>(() => ComboFactory.Create(null));
+
+        Assert.That(error.ParamName, Is.EqualTo("items"));
+    }
+
+    [TestCase("")]
+    [TestCase("R")]
+    [TestCase("T")]
+    public void ComboFactory_RejectsGroupsWithoutASupportedPair(string arrangement)
+    {
+        ArgumentException error = Assert.Throws<ArgumentException>(
+            () => ComboFactory.Create(CreateItems(arrangement)));
+
+        Assert.That(error.ParamName, Is.EqualTo("items"));
+        Assert.That(error.Message, Does.Contain("at least two supported special items"));
+    }
+
+    [TestCase("R")]
+    [TestCase("T")]
+    public void ComboFactory_NullMemberDoesNotCompleteAPair(string arrangement)
+    {
+        List<SpecialItem> items = CreateItems(arrangement);
+        items.Add(null);
+
+        Assert.Throws<ArgumentException>(() => ComboFactory.Create(items));
+    }
+
     private List<SpecialItem> CreateItems(string arrangement)
     {
         var items = new List<SpecialItem>();

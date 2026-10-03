@@ -18,6 +18,20 @@ public class LevelGoals
 
     public IReadOnlyList<GoalType> ActiveTypes => activeTypes;
 
+    public bool IsComplete
+    {
+        get
+        {
+            foreach (int remaining in remainingByType.Values)
+            {
+                if (remaining > 0)
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
     public int GetRemaining(GoalType type)
     {
         return remainingByType.TryGetValue(type, out int remaining) ? remaining : 0;

@@ -2,10 +2,10 @@ using UnityEngine;
 
 public static class LevelProgression
 {
-    public const int LevelCount = 10;
+    public static int LevelCount => LevelLoader.LevelCount;
 
     private const string CurrentLevelKey = "CurrentLevel";
-    private const int FinishedValue = LevelCount + 1;
+    private static int FinishedValue => LevelCount + 1;
 
     public static bool IsFinished => StoredLevel > LevelCount;
 

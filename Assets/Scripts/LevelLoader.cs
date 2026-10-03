@@ -6,6 +6,15 @@ public static class LevelLoader
     private const string LevelsFolder = "Levels";
     private const int MinGridSize = 6;
     private const int MaxGridSize = 10;
+    private static int? levelCount;
+
+    public static int LevelCount => levelCount ??= Resources.LoadAll<TextAsset>(LevelsFolder).Length;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetLevelCount()
+    {
+        levelCount = null;
+    }
 
     public static LevelData Load(int levelNumber)
     {

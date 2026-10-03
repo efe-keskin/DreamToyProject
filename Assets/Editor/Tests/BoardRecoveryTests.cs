@@ -149,6 +149,31 @@ public class BoardRecoveryTests
     }
 
     [Test]
+    public void CompletedGoals_SkipReshuffleBeforeClearedObstacleIsRemoved()
+    {
+        AddStone(0, 0);
+        AddCube(0, 1, CubeType.Red);
+        AddCube(1, 1, CubeType.Green);
+        AddCube(2, 1, CubeType.Red);
+
+        var stone = (Stone)board.GetItem(0, 0);
+        stone.ReceiveSpecialHit(new DamageTransaction(DamageSource.SpecialItem), Vector2Int.zero);
+        board.Goals.Refresh(stone);
+        Assert.That(board.Goals.IsComplete, Is.True);
+        Assert.That(board.HasValidMove(), Is.False);
+
+        var before = (GridItem[,])items.Clone();
+        int settledCount = 0;
+        board.BoardSettled += () => settledCount++;
+        Call(board, "BeginTransition");
+        Call(board, "EndTransition");
+
+        Assert.That(settledCount, Is.EqualTo(1));
+        CollectionAssert.AreEqual(before, items);
+        Assert.That(board.MovesRemaining, Is.EqualTo(8));
+    }
+
+    [Test]
     public void ImpossibleReshuffle_ReportsSettledWithoutChangingTheBoard()
     {
         AddStone(0, 0);
