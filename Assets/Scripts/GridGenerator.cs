@@ -17,6 +17,7 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private float appearDuration = 0.15f;
 
     private const int MinGroupSize = 2;
+    private const float ReshuffleDuration = 0.3f;
 
     public int MovesRemaining { get; private set; }
     public LevelGoals Goals { get; } = new LevelGoals();
@@ -57,6 +58,7 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
+        BeginTransition();
         items = new GridItem[width, height];
 
         for (int y = 0; y < height; y++)
@@ -65,8 +67,8 @@ public class GridGenerator : MonoBehaviour
                 CreateFromToken(level.GetToken(x, y), x, y);
         }
 
-        hints.Refresh();
         BoardCreated?.Invoke();
+        EndTransition();
     }
 
     public bool HasRemainingObstacles()
@@ -74,6 +76,20 @@ public class GridGenerator : MonoBehaviour
         foreach (GridItem item in items)
         {
             if (item is Obstacle)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool HasValidMove()
+    {
+        foreach (GridItem item in items)
+        {
+            if (item is SpecialItem)
+                return true;
+
+            if (item is Cube cube && FindCubeGroup(cube).Count >= MinGroupSize)
                 return true;
         }
 
@@ -349,8 +365,58 @@ public class GridGenerator : MonoBehaviour
 
     private void EndTransition()
     {
+        // A finished level takes priority over recovery, including a win on the last move.
+        if (!inputDisabled && MovesRemaining > 0 && HasRemainingObstacles() && !HasValidMove()
+            && TryReshuffleCubes())
+            return;
+
+        FinishTransition();
+    }
+
+    private bool TryReshuffleCubes()
+    {
+        var cubes = new List<Cube>();
+        var colors = new List<CubeType>();
+        var cells = new List<Vector2Int>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (items[x, y] is not Cube cube)
+                    continue;
+
+                cubes.Add(cube);
+                colors.Add(cube.Type);
+                cells.Add(new Vector2Int(x, y));
+            }
+        }
+
+        int[] order = CubeShuffle.Create(colors, cells);
+        if (order == null)
+            return false;
+
+        hints.Clear();
+        Sequence shuffle = DOTween.Sequence().SetLink(gameObject);
+        for (int i = 0; i < cells.Count; i++)
+        {
+            Cube cube = cubes[order[i]];
+            Vector2Int cell = cells[i];
+            items[cell.x, cell.y] = cube;
+            cube.SetGridPosition(cell.x, cell.y);
+            shuffle.Join(cube.MoveTo(GetLocalPosition(cell.x, cell.y), ReshuffleDuration));
+        }
+
+        shuffle.OnComplete(FinishTransition);
+        return true;
+    }
+
+    private void FinishTransition()
+    {
+        if (!inputDisabled)
+            hints.Refresh();
+
         isBusy = false;
-        hints.Refresh();
         BoardSettled?.Invoke();
     }
 
