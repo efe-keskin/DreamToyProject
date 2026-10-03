@@ -3,6 +3,8 @@ using UnityEngine;
 
 public static class DebrisBurst
 {
+    private static readonly System.Random random = new System.Random(System.Guid.NewGuid().GetHashCode());
+
     private readonly struct PieceTier
     {
         public readonly int MinCount;
@@ -44,24 +46,33 @@ public static class DebrisBurst
 
     private static void SpawnTier(GridGenerator board, Vector3 localPosition, float itemSize, Sprite[] sprites, PieceTier tier)
     {
-        int count = Random.Range(tier.MinCount, tier.MaxCount + 1);
+        int count = random.Next(tier.MinCount, tier.MaxCount + 1);
 
         for (int i = 0; i < count; i++)
         {
-            Sprite sprite = sprites[Random.Range(0, sprites.Length)];
-            float size = itemSize * Random.Range(tier.MinSize, tier.MaxSize);
+            Sprite sprite = sprites[random.Next(sprites.Length)];
+            float size = itemSize * Range(tier.MinSize, tier.MaxSize);
             float scale = size / Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
-            Vector3 start = localPosition + (Vector3)(Random.insideUnitCircle * StartSpread);
+            Vector3 start = localPosition + (Vector3)(InsideUnitCircle() * StartSpread);
 
             Transform piece = EffectSprite.Create(board, sprite, Color.white, start, Vector3.one * scale).transform;
-            piece.localEulerAngles = new Vector3(0f, 0f, Random.Range(0f, 360f));
+            piece.localEulerAngles = new Vector3(0f, 0f, Range(0f, 360f));
 
-            float angle = Random.Range(MinLaunchAngle, MaxLaunchAngle) * Mathf.Deg2Rad;
-            Vector2 velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * Random.Range(tier.MinSpeed, tier.MaxSpeed);
-            float spin = Random.Range(MinSpin, MaxSpin) * (Random.value < 0.5f ? -1f : 1f);
+            float angle = Range(MinLaunchAngle, MaxLaunchAngle) * Mathf.Deg2Rad;
+            Vector2 velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * Range(tier.MinSpeed, tier.MaxSpeed);
+            float spin = Range(MinSpin, MaxSpin) * (random.NextDouble() < 0.5f ? -1f : 1f);
 
-            Launch(piece, velocity, spin, Lifetime * Random.Range(0.85f, 1.15f));
+            Launch(piece, velocity, spin, Lifetime * Range(0.85f, 1.15f));
         }
+    }
+
+    private static float Range(float min, float max) => Mathf.Lerp(min, max, (float)random.NextDouble());
+
+    private static Vector2 InsideUnitCircle()
+    {
+        float angle = Range(0f, 2f * Mathf.PI);
+        float radius = Mathf.Sqrt((float)random.NextDouble());
+        return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
     }
 
     private static void Launch(Transform piece, Vector2 velocity, float spin, float duration)
