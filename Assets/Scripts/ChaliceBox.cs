@@ -79,10 +79,8 @@ public class ChaliceBox : Obstacle
             Vector3 position = Board.transform.InverseTransformPoint(chalice.transform.position);
             float height = Board.transform.InverseTransformVector(
                 chalice.transform.TransformVector(Vector3.up * chalice.sprite.bounds.size.y)).magnitude;
-            float direction = Mathf.Abs(transform.localPosition.x) < 0.01f
-                ? (slot % 2 == 0 ? -1f : 1f) : -Mathf.Sign(transform.localPosition.x);
             chalice.enabled = false;
-            ChaliceBoxEffect.Collect(Board, position, chaliceSprite, height, sparkleSprite, sparkleMaterial, direction, i * 0.035f);
+            ChaliceBoxEffect.Collect(Board, position, chaliceSprite, height, sparkleSprite, sparkleMaterial, i * 0.035f);
         }
 
         PlaceChalices();
