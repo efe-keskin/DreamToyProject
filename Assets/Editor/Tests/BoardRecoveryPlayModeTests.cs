@@ -186,9 +186,28 @@ public class BoardRecoveryPlayModeTests
         SetField(factory, "tntPrefab", LoadPrefab<Tnt>("TntPrefab"));
         SetField(board, "specialItemFactory", factory);
         SetField(board, "cubePrefab", LoadPrefab<Cube>("CubePrefab").gameObject);
-        SetField(board, "stonePrefab", LoadPrefab<Stone>("StonePrefab"));
-        SetField(board, "vasePrefab", LoadPrefab<Vase>("VasePrefab"));
+        SetObstacles(board,
+            (LevelTokens.Stone, LoadPrefab<Stone>("StonePrefab")),
+            (LevelTokens.Vase, LoadPrefab<Vase>("VasePrefab")));
         SetField(board, "chaliceBoxPrefab", LoadPrefab<ChaliceBox>("ChaliceBoxPrefab"));
+    }
+
+    private static void SetObstacles(GridGenerator board, params (string token, Obstacle prefab)[] entries)
+    {
+        FieldInfo field = typeof(GridGenerator).GetField("obstacles", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.That(field, Is.Not.Null, "Missing fixture field: obstacles");
+
+        System.Type entryType = field.FieldType.GetElementType();
+        System.Array table = System.Array.CreateInstance(entryType, entries.Length);
+        for (int i = 0; i < entries.Length; i++)
+        {
+            object entry = System.Activator.CreateInstance(entryType, true);
+            SetField(entry, "token", entries[i].token);
+            SetField(entry, "prefab", entries[i].prefab);
+            table.SetValue(entry, i);
+        }
+
+        field.SetValue(board, table);
     }
 
     private static T LoadPrefab<T>(string name) where T : Component

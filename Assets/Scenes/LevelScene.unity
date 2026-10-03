@@ -2393,8 +2393,11 @@ MonoBehaviour:
   specialItemFactory:
     rocketPrefab: {fileID: 3963992842245885685, guid: b19470e38221c4f2ebaae16563edd72e, type: 3}
     tntPrefab: {fileID: -2706338062643875906, guid: 2960be3661cd249ef8a94f2a415f5f8e, type: 3}
-  vasePrefab: {fileID: 8192145606865968885, guid: 63ed4300dd1464c34b805d29bc72a3b3, type: 3}
-  stonePrefab: {fileID: 8180531717198163665, guid: 11e473b9d9cb94af6bd8b5d859bffb12, type: 3}
+  obstacles:
+  - token: s
+    prefab: {fileID: 8180531717198163665, guid: 11e473b9d9cb94af6bd8b5d859bffb12, type: 3}
+  - token: v
+    prefab: {fileID: 8192145606865968885, guid: 63ed4300dd1464c34b805d29bc72a3b3, type: 3}
   chaliceBoxPrefab: {fileID: 2850371299559589301, guid: 4d7aac24e9bdf4e0abd7f109a030166f, type: 3}
   spacing: 1
   fallDuration: 0.3
