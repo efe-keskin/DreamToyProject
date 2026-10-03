@@ -57,6 +57,34 @@ public class ObstacleDamageTests
         Assert.That(stone.RemainingGoalCount, Is.Zero);
     }
 
+    [Test]
+    public void LevelGoals_CompleteOnlyAfterEveryRegisteredGoalIsCleared()
+    {
+        var goals = new LevelGoals();
+        Assert.That(goals.IsComplete, Is.True);
+
+        TestVase vase = CreateVase();
+        TestStone stone = CreateStone();
+        goals.Register(vase);
+        goals.Register(stone);
+        Assert.That(goals.IsComplete, Is.False);
+
+        vase.ReceiveBlast(new DamageTransaction(DamageSource.Blast), 1);
+        goals.Refresh(vase);
+        Assert.That(goals.GetRemaining(GoalType.Vase), Is.EqualTo(1));
+        Assert.That(goals.IsComplete, Is.False);
+
+        vase.ReceiveBlast(new DamageTransaction(DamageSource.Blast), 1);
+        goals.Refresh(vase);
+        Assert.That(goals.GetRemaining(GoalType.Vase), Is.Zero);
+        Assert.That(goals.IsComplete, Is.False);
+
+        stone.ReceiveSpecialHit(new DamageTransaction(DamageSource.SpecialItem), Vector2Int.zero);
+        goals.Refresh(stone);
+        Assert.That(goals.GetRemaining(GoalType.Stone), Is.Zero);
+        Assert.That(goals.IsComplete, Is.True);
+    }
+
     private TestVase CreateVase()
     {
         TestVase vase = owner.AddComponent<TestVase>();

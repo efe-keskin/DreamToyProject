@@ -24,7 +24,7 @@ public class LevelSceneController : MonoBehaviour
         if (resultShown)
             return;
 
-        if (!board.HasRemainingObstacles())
+        if (board.Goals.IsComplete)
             Win();
         else if (board.MovesRemaining == 0)
             Lose();

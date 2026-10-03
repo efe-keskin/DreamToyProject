@@ -32,16 +32,17 @@ During Play mode in `LevelScene`, **Tools → Force Win** and **Tools → Force 
 
 ## EditMode tests
 
-Open **Window → General → Test Runner**, select **EditMode**, and click **Run All**. The suite contains 31 cases covering special-item thresholds, combo selection, obstacle damage, transaction accounting, level loading, and dead-board recovery.
+Open **Window → General → Test Runner**, select **EditMode**, and click **Run All**. The suite covers special-item thresholds, combo selection and invalid inputs, obstacle damage, goal completion, transaction accounting, level loading, and dead-board recovery.
 
-Tests live in `Assets/Editor/Tests`. The ten-level loading check and board tests use real project assets. The `PlayModeIntegration` test automatically enters and exits Play mode to check falling, reshuffling, and input locking; run it from the same EditMode tab. Small obstacle helpers in `Assets/Tests/Support` compile only in the Editor. Scene flow and other visual effects still require manual verification.
+Tests live in `Assets/Editor/Tests`. The level-loading check discovers and validates every runtime level; it and the board tests use real project assets. The `PlayModeIntegration` test automatically enters and exits Play mode to check falling, reshuffling, and input locking; run it from the same EditMode tab. Small obstacle helpers in `Assets/Tests/Support` compile only in the Editor. Scene flow and other visual effects still require manual verification.
 
 ## Implementation choices
 
 - **Chalice doors:** the supplied prefab uses one hit point. A damage source that opens the door does not also collect chalices from that box.
 - **Damage identity:** one cube blast, one special explosion, or one combined explosion is a single damage transaction. Overlapping hits within it damage a Vase or closed Chalice door once. An open box collects one chalice per adjacent blasted cube or distinct box cell hit by a special. Specials activated by a chain reaction start separate transactions.
 - **Fixed obstacles:** Stones and Chalice Boxes block falling and refill from above. Empty cells beneath them remain empty until a falling item can reach them.
-- **Turn completion:** input is blocked during explosions, falling, and any reshuffle. Finished levels skip recovery, with a cleared board taking priority over zero remaining moves. Dead boards try a bounded number of cube permutations, then deliberately place an existing same-color pair in adjacent cube cells if needed.
+- **Turn completion:** input is blocked during explosions, falling, and any reshuffle. `LevelGoals` determines completion for both win detection and reshuffle eligibility. Completing all goals takes priority over zero remaining moves. Dead boards try a bounded number of cube permutations, then deliberately place an existing same-color pair in adjacent cube cells if needed.
+- **Level count:** progression automatically uses the number of level assets in `Assets/Resources/Levels`. Keep filenames consecutive from `level_01.json`, with matching `level_number` values.
 
 ## Project layout
 

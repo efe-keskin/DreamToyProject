@@ -27,6 +27,7 @@ public class GridGenerator : MonoBehaviour
 
     private const int MinGroupSize = 2;
     private const float ReshuffleDuration = 0.3f;
+    private static readonly CubeType[] CubeTypes = (CubeType[])System.Enum.GetValues(typeof(CubeType));
 
     public int MovesRemaining { get; private set; }
     public LevelGoals Goals { get; } = new LevelGoals();
@@ -78,17 +79,6 @@ public class GridGenerator : MonoBehaviour
 
         BoardCreated?.Invoke();
         EndTransition();
-    }
-
-    public bool HasRemainingObstacles()
-    {
-        foreach (GridItem item in items)
-        {
-            if (item is Obstacle)
-                return true;
-        }
-
-        return false;
     }
 
     public bool HasValidMove()
@@ -341,7 +331,7 @@ public class GridGenerator : MonoBehaviour
 
     private static CubeType RandomCubeType()
     {
-        return (CubeType)Random.Range(0, 4);
+        return CubeTypes[Random.Range(0, CubeTypes.Length)];
     }
 
     private void MergeIntoSpecialItem(List<Cube> group, int x, int y, SpecialItem specialItem)
@@ -390,7 +380,7 @@ public class GridGenerator : MonoBehaviour
     private void EndTransition()
     {
         // A finished level takes priority over recovery, including a win on the last move.
-        if (!inputDisabled && MovesRemaining > 0 && HasRemainingObstacles() && !HasValidMove()
+        if (!inputDisabled && MovesRemaining > 0 && !Goals.IsComplete && !HasValidMove()
             && TryReshuffleCubes())
             return;
 
