@@ -1,16 +1,10 @@
-{
-  "level_number": 6,
-  "grid_width": 8,
-  "grid_height": 8,
-  "move_count": 28,
-  "grid": [
-    "rand", "rand", "rand", "s", "s", "rand", "rand", "rand",
-    "rand", "rand", "rand", "s", "s", "rand", "rand", "rand",
-    "v", "rand", "rand", "rand", "rand", "rand", "t", "v",
-    "rand", "rand", "rand", "rand", "rand", "rand", "rand", "rand",
-    "rand", "rand", "s", "s", "s", "rand", "rand", "rand",
-    "rand", "rand", "rand", "t", "rand", "rand", "rand", "rand",
-    "rand", "v", "rand", "rand", "rand", "rand", "v", "rand",
-    "rand", "rand", "rand", "rand", "rand", "rand", "rand", "rand"
-  ]
-}
+{"level_number":6,"grid_width":8,"grid_height":9,"move_count":23,"grid":[
+  "t","hro","vro","rand","rand","vro","hro","vro",
+  "rand","rand","rand","rand","rand","rand","rand","rand",
+  "rand","rand","rand","rand","rand","rand","rand","rand",
+  "r","r","b","b","r","r","b","b",
+  "g","g","y","y","g","g","y","y",
+  "r","r","b","b","r","r","b","b",
+  "vro","vro","vro","t","t","vro","vro","vro",
+  "v","v","v","v","v","v","v","v",
+  "v","v","v","v","v","v","v","v"]}
