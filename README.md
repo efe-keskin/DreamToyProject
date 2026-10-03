@@ -29,6 +29,12 @@ To select a level or reset progress, **stop Play mode**, open **Tools → Set Cu
 
 During Play mode in `LevelScene`, **Tools → Force Win** and **Tools → Force Lose** exercise the result screens. Force Win also advances saved progression.
 
+## EditMode tests
+
+Open **Window → General → Test Runner**, select **EditMode**, and click **Run All**. The suite contains eight test methods (15 cases) covering special-item thresholds, combo selection, obstacle damage, transaction accounting, and level loading.
+
+Tests live in `Assets/Editor/Tests`. The ten-level loading check is an asset integration test, tagged `AssetIntegration`; the other tests cover deterministic rules. Small obstacle helpers in `Assets/Tests/Support` compile only in the Editor. Animation, board resolution, and scene flow still require PlayMode or manual verification.
+
 ## Implementation choices
 
 - **Chalice doors:** the supplied prefab uses one hit point. A damage source that opens the door does not also collect chalices from that box.
