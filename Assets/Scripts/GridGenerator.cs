@@ -4,10 +4,19 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
+    [System.Serializable]
+    private class ObstacleEntry
+    {
+        [SerializeField] private string token;
+        [SerializeField] private Obstacle prefab;
+
+        public string Token => token;
+        public Obstacle Prefab => prefab;
+    }
+
     [SerializeField] private GameObject cubePrefab;
     [SerializeField] private SpecialItemFactory specialItemFactory;
-    [SerializeField] private Vase vasePrefab;
-    [SerializeField] private Stone stonePrefab;
+    [SerializeField] private ObstacleEntry[] obstacles;
     [SerializeField] private ChaliceBox chaliceBoxPrefab;
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private float fallDuration = 0.3f;
@@ -256,16 +265,31 @@ public class GridGenerator : MonoBehaviour
             case LevelTokens.Tnt:
                 PlaceItem(specialItemFactory.CreateTnt(transform), x, y);
                 break;
-            case LevelTokens.Stone:
-                PlaceObstacle(Instantiate(stonePrefab, transform), x, y);
-                break;
-            case LevelTokens.Vase:
-                PlaceObstacle(Instantiate(vasePrefab, transform), x, y);
-                break;
             case LevelTokens.ChaliceBoxBottomLeft:
                 CreateChaliceBox(x, y);
                 break;
+            case LevelTokens.ChaliceBoxBottomRight:
+            case LevelTokens.ChaliceBoxTopLeft:
+            case LevelTokens.ChaliceBoxTopRight:
+                break;
+            default:
+                CreateObstacle(token, x, y);
+                break;
         }
+    }
+
+    private void CreateObstacle(string token, int x, int y)
+    {
+        foreach (ObstacleEntry entry in obstacles)
+        {
+            if (entry.Token == token)
+            {
+                PlaceObstacle(Instantiate(entry.Prefab, transform), x, y);
+                return;
+            }
+        }
+
+        Debug.LogError($"No obstacle prefab assigned for token '{token}'", this);
     }
 
     private void PlaceItem(GridItem item, int x, int y)
